@@ -48,13 +48,6 @@ struct SettingsView: View {
                 ttsProviderSection
 
                 voiceSection
-
-                Section {
-                    Button("Restart from Beginning") {
-                        viewModel.restart()
-                        dismiss()
-                    }
-                }
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)

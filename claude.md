@@ -10,6 +10,17 @@ An iOS app that helps users practice speeches by reading text aloud with configu
 - **Language**: Swift 5.9+
 - **Architecture**: MVVM
 
+## Running on Simulator
+
+```bash
+# Build and install on iPhone 17 Pro simulator
+xcodebuild -scheme SpeechPractice -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath build build
+xcrun simctl install "iPhone 17 Pro" build/Build/Products/Debug-iphonesimulator/SpeechPractice.app
+xcrun simctl launch "iPhone 17 Pro" com.speechpractice.app
+```
+
+To list available simulators: `xcodebuild -scheme SpeechPractice -showdestinations`
+
 ## Core Features
 
 ### 1. Speech Input
