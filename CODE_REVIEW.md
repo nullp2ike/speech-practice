@@ -149,115 +149,68 @@ The codebase is well-structured with clear separation of concerns (MVVM). Howeve
 
 ## Low Priority / Code Quality
 
-### 11. Unused property
+### 11. ~~Unused property~~ FIXED
 
 **File:** `Services/SpeechSynthesizerService.swift:15`
 **Severity:** Low
 **Type:** Dead Code
+**Status:** ✅ FIXED (2026-01-26)
 
-```swift
-private var onUtteranceProgress: ((Double) -> Void)?
-```
+**Problem:** This property was declared but never assigned or used.
 
-**Problem:** This property is declared but never assigned or used.
-
-**Fix:** Remove the unused property.
+**Resolution:** Property was removed during the callback cleanup refactoring (#3).
 
 ---
 
-### 12. Magic numbers
+### 12. ~~Magic numbers~~ FIXED
 
 **File:** `ViewModels/PracticeViewModel.swift:249`
 **Severity:** Low
 **Type:** Code Quality
-
-```swift
-let steps = Int(duration * 10) // Update every 0.1 seconds
-```
+**Status:** ✅ FIXED (2026-01-26)
 
 **Problem:** Magic number should be a named constant for clarity and maintainability.
 
-**Fix:**
-```swift
-private static let pauseUpdateInterval: TimeInterval = 0.1
-
-let steps = Int(duration / Self.pauseUpdateInterval)
-```
+**Resolution:** Added `private static let pauseUpdateInterval: TimeInterval = 0.1` constant and refactored `startPauseInterval()` to use it during the race condition fix (#6).
 
 ---
 
-### 13. Inconsistent error handling
+### 13. ~~Inconsistent error handling~~ FIXED
 
 **Files:** Multiple ViewModels
 **Severity:** Low
 **Type:** Error Handling
+**Status:** ✅ FIXED (2026-01-26)
 
-```swift
-try? modelContext.save()
-```
+**Problem:** Some operations used `try?` silently. Failed saves should at least be logged.
 
-**Problem:** Some operations use `try?` silently. Failed saves should at least be logged or shown to the user.
-
-**Fix:**
-```swift
-do {
-    try modelContext.save()
-} catch {
-    print("Failed to save: \(error)")
-    // Consider showing user-facing error
-}
-```
+**Resolution:** Updated `SpeechEditorViewModel.save()` to use do-catch with error logging instead of silent `try?`.
 
 ---
 
-### 14. displayName should be localized
+### 14. ~~displayName should be localized~~ FIXED
 
 **File:** `Models/SpeechSegment.swift:25-31`
 **Severity:** Low
 **Type:** Localization
-
-```swift
-var displayName: String {
-    switch self {
-    case .sentence: return "Sentence"
-    case .paragraph: return "Paragraph"
-    }
-}
-```
+**Status:** ✅ FIXED (2026-01-26)
 
 **Problem:** Hardcoded English strings should use localization.
 
-**Fix:**
-```swift
-var displayName: String {
-    switch self {
-    case .sentence: return String(localized: "Sentence")
-    case .paragraph: return String(localized: "Paragraph")
-    }
-}
-```
+**Resolution:** Updated `displayName` computed property to use `String(localized:)` for both "Sentence" and "Paragraph" strings.
 
 ---
 
-### 15. Missing accessibility labels
+### 15. ~~Missing accessibility labels~~ FIXED
 
 **File:** `Views/PracticeView.swift:129-156`
 **Severity:** Low
 **Type:** Accessibility
+**Status:** ✅ FIXED (2026-01-26)
 
-**Problem:** Navigation buttons lack accessibility labels for VoiceOver users.
+**Problem:** Navigation buttons lacked accessibility labels for VoiceOver users.
 
-**Fix:**
-```swift
-Button {
-    viewModel.goToPreviousSegment()
-} label: {
-    Image(systemName: "backward.fill")
-        .font(.title2)
-}
-.accessibilityLabel("Previous segment")
-.disabled(!viewModel.canGoBack)
-```
+**Resolution:** Added `.accessibilityLabel()` to all three playback control buttons: "Previous segment", dynamic "Play"/"Pause", and "Next segment".
 
 ---
 
@@ -317,9 +270,9 @@ Allow cancelling speech synthesis with proper cleanup instead of relying solely 
 | Critical | 3 | ✅ 3 |
 | High | 3 | ✅ 3 |
 | Medium | 4 | ✅ 3 |
-| Low | 5 | 0 |
+| Low | 5 | ✅ 5 |
 | Suggestions | 3 | 0 |
-| **Total** | **18** | **9** |
+| **Total** | **18** | **14** |
 
 ---
 
@@ -334,4 +287,6 @@ Allow cancelling speech synthesis with proper cleanup instead of relying solely 
 7. ~~Fix empty state vs no search results (#10)~~ ✅ DONE
 8. ~~Cache haptic generators (#7)~~ ✅ DONE
 9. ~~Remove double-save in settings (#9)~~ ✅ DONE
-10. Address remaining low priority issues
+10. ~~Address remaining low priority issues (#11-#15)~~ ✅ DONE
+
+**Remaining:** Issues #8 (SwiftData index) and suggestions #16-#18 are deferred or optional enhancements.

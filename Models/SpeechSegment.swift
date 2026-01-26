@@ -25,9 +25,9 @@ enum SegmentType: String, CaseIterable, Codable {
     var displayName: String {
         switch self {
         case .sentence:
-            return "Sentence"
+            return String(localized: "Sentence")
         case .paragraph:
-            return "Paragraph"
+            return String(localized: "Paragraph")
         }
     }
 }

@@ -132,6 +132,7 @@ struct PracticeView: View {
                     Image(systemName: "backward.fill")
                         .font(.title2)
                 }
+                .accessibilityLabel("Previous segment")
                 .disabled(!viewModel.canGoBack)
 
                 // Play/Pause
@@ -145,6 +146,7 @@ struct PracticeView: View {
                         .foregroundStyle(.white)
                         .clipShape(Circle())
                 }
+                .accessibilityLabel(viewModel.isPlaying && !viewModel.isPaused ? "Pause" : "Play")
 
                 // Next
                 Button {
@@ -153,6 +155,7 @@ struct PracticeView: View {
                     Image(systemName: "forward.fill")
                         .font(.title2)
                 }
+                .accessibilityLabel("Next segment")
                 .disabled(!viewModel.canGoForward)
             }
 

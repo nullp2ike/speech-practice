@@ -47,7 +47,11 @@ final class SpeechEditorViewModel {
         speech.updateContent(content)
 
         if let modelContext {
-            try? modelContext.save()
+            do {
+                try modelContext.save()
+            } catch {
+                print("Failed to save speech: \(error)")
+            }
         }
 
         HapticManager.shared.playLightImpact()
