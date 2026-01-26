@@ -201,7 +201,7 @@ struct AzureSettingsView: View {
         if !apiKey.isEmpty {
             // Validate API key format before testing
             guard isValidAPIKey(apiKey) else {
-                operationResult = .failure("Invalid API key format. Expected 32 hexadecimal characters.")
+                operationResult = .failure("Invalid API key format.")
                 return
             }
             // User entered a new key - test with that
@@ -231,9 +231,11 @@ struct AzureSettingsView: View {
         }
     }
 
-    /// Validates that an API key has the expected Azure format (32 hex characters).
+    /// Validates that an API key has a reasonable format for Azure.
+    /// Azure keys are typically 32 hex characters, but some resource types use longer keys.
     private func isValidAPIKey(_ key: String) -> Bool {
-        key.count == 32 && key.allSatisfy { $0.isHexDigit }
+        let trimmed = key.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.count >= 32 && trimmed.allSatisfy { $0.isLetter || $0.isNumber || $0 == "+" || $0 == "/" || $0 == "=" }
     }
 
     private func saveCredentials() {
@@ -242,7 +244,7 @@ struct AzureSettingsView: View {
         if !apiKey.isEmpty {
             // Validate API key format before saving
             guard isValidAPIKey(apiKey) else {
-                operationResult = .failure("Invalid API key format. Expected 32 hexadecimal characters.")
+                operationResult = .failure("Invalid API key format.")
                 return
             }
             // User entered a new key - save with new key
