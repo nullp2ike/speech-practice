@@ -60,6 +60,7 @@ final class PracticeViewModel {
         currentSegmentIndex < segments.count - 1
     }
 
+
     var playPauseIcon: String {
         if isPlaying && !isPaused {
             return "pause.fill"
@@ -160,38 +161,39 @@ final class PracticeViewModel {
 
     func goToNextSegment() {
         guard canGoForward else { return }
-        cancelPauseInterval()
-        cancelCurrentSpeech()
-        currentSegmentIndex += 1
-        HapticManager.shared.playNavigationFeedback()
-
-        if isPlaying {
-            play()
-        }
+        navigateToSegment(currentSegmentIndex + 1)
     }
 
     func goToPreviousSegment() {
         guard canGoBack else { return }
+        navigateToSegment(currentSegmentIndex - 1)
+    }
+
+    func goToSegment(at index: Int) {
+        guard index >= 0 && index < segments.count else { return }
+        navigateToSegment(index, hapticStyle: .selection)
+    }
+
+    private func navigateToSegment(_ index: Int, hapticStyle: HapticStyle = .navigation) {
         cancelPauseInterval()
         cancelCurrentSpeech()
-        currentSegmentIndex -= 1
-        HapticManager.shared.playNavigationFeedback()
+        currentSegmentIndex = index
+
+        switch hapticStyle {
+        case .navigation:
+            HapticManager.shared.playNavigationFeedback()
+        case .selection:
+            HapticManager.shared.playSelectionFeedback()
+        }
 
         if isPlaying {
             play()
         }
     }
 
-    func goToSegment(at index: Int) {
-        guard index >= 0 && index < segments.count else { return }
-        cancelPauseInterval()
-        cancelCurrentSpeech()
-        currentSegmentIndex = index
-        HapticManager.shared.playSelectionFeedback()
-
-        if isPlaying {
-            play()
-        }
+    private enum HapticStyle {
+        case navigation
+        case selection
     }
 
     /// Cancels the current speech operation using the cancellation token
@@ -208,6 +210,16 @@ final class PracticeViewModel {
         stop()
         currentSegmentIndex = 0
         HapticManager.shared.playNavigationFeedback()
+    }
+
+    func goToBeginning() {
+        guard canGoBack else { return }
+        navigateToSegment(0)
+    }
+
+    func goToEnd() {
+        guard canGoForward else { return }
+        navigateToSegment(segments.count - 1)
     }
 
     // MARK: - Settings

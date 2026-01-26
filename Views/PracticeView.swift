@@ -146,13 +146,25 @@ struct PracticeView: View {
     private var controlsView: some View {
         VStack(spacing: 16) {
             // Main playback controls
-            HStack(spacing: 40) {
+            HStack(spacing: 16) {
+                // Jump to Beginning
+                Button {
+                    viewModel.goToBeginning()
+                } label: {
+                    Image(systemName: "backward.end.fill")
+                        .font(.title3)
+                        .frame(minWidth: 44, minHeight: 44)
+                }
+                .accessibilityLabel("Jump to beginning")
+                .disabled(!viewModel.canGoBack)
+
                 // Previous
                 Button {
                     viewModel.goToPreviousSegment()
                 } label: {
                     Image(systemName: "backward.fill")
                         .font(.title2)
+                        .frame(minWidth: 44, minHeight: 44)
                 }
                 .accessibilityLabel("Previous segment")
                 .disabled(!viewModel.canGoBack)
@@ -176,8 +188,20 @@ struct PracticeView: View {
                 } label: {
                     Image(systemName: "forward.fill")
                         .font(.title2)
+                        .frame(minWidth: 44, minHeight: 44)
                 }
                 .accessibilityLabel("Next segment")
+                .disabled(!viewModel.canGoForward)
+
+                // Jump to End
+                Button {
+                    viewModel.goToEnd()
+                } label: {
+                    Image(systemName: "forward.end.fill")
+                        .font(.title3)
+                        .frame(minWidth: 44, minHeight: 44)
+                }
+                .accessibilityLabel("Jump to end")
                 .disabled(!viewModel.canGoForward)
             }
 
