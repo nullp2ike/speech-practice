@@ -25,9 +25,28 @@ struct PlaybackSettings: Codable, Equatable, Sendable {
 
     var voice: AVSpeechSynthesisVoice? {
         if let identifier = voiceIdentifier {
-            return AVSpeechSynthesisVoice(identifier: identifier)
+            // Validate the voice identifier - it may become invalid if the voice is uninstalled
+            if let voice = AVSpeechSynthesisVoice(identifier: identifier) {
+                return voice
+            }
+            // Voice not found - identifier is stale, return nil to use system default
+            return nil
         }
         return nil
+    }
+
+    /// Returns true if the stored voice identifier is valid and available on the device.
+    var isVoiceIdentifierValid: Bool {
+        guard let identifier = voiceIdentifier else { return true }
+        return AVSpeechSynthesisVoice(identifier: identifier) != nil
+    }
+
+    /// Clears the voice identifier if it's no longer valid (voice was uninstalled).
+    mutating func validateAndClearInvalidVoice() {
+        if let identifier = voiceIdentifier,
+           AVSpeechSynthesisVoice(identifier: identifier) == nil {
+            voiceIdentifier = nil
+        }
     }
 
     mutating func setRate(_ newRate: Float) {

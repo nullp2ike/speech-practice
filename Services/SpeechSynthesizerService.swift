@@ -1,5 +1,22 @@
 import Foundation
 import AVFoundation
+import ObjectiveC
+
+// MARK: - Utterance Token Association
+
+private var utteranceTokenKey: UInt8 = 0
+
+private extension AVSpeechUtterance {
+    /// Associates a cancellation token with this utterance for later verification
+    var associatedToken: SpeechCancellationToken? {
+        get {
+            objc_getAssociatedObject(self, &utteranceTokenKey) as? SpeechCancellationToken
+        }
+        set {
+            objc_setAssociatedObject(self, &utteranceTokenKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+}
 
 // MARK: - Speech Cancellation Token
 
@@ -26,11 +43,15 @@ final class SpeechSynthesizerService: NSObject {
     private(set) var isSpeaking = false
     private(set) var isPaused = false
     private(set) var currentUtteranceProgress: Double = 0
+    private(set) var audioSessionError: Error?
 
     private var segmentStartTime: Date?
     private var onSegmentComplete: ((TimeInterval) -> Void)?
     private var onInterruption: (() -> Void)?
     private var currentCancellationToken: SpeechCancellationToken?
+    /// Token that was active when the current callbacks were registered.
+    /// Used to verify that didFinish callbacks match the current speech operation.
+    private var callbackToken: SpeechCancellationToken?
 
     override init() {
         super.init()
@@ -43,6 +64,7 @@ final class SpeechSynthesizerService: NSObject {
     func cleanup() {
         currentCancellationToken?.cancel()
         currentCancellationToken = nil
+        callbackToken = nil
         stop()
         onSegmentComplete = nil
         onInterruption = nil
@@ -53,9 +75,17 @@ final class SpeechSynthesizerService: NSObject {
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
             try AVAudioSession.sharedInstance().setActive(true)
+            audioSessionError = nil
         } catch {
+            audioSessionError = error
             print("Failed to configure audio session: \(error)")
         }
+    }
+
+    /// Returns a user-friendly message if there's an audio session error.
+    var audioErrorMessage: String? {
+        guard let error = audioSessionError else { return nil }
+        return "Audio playback may not work properly: \(error.localizedDescription)"
     }
 
     private func observeAudioInterruptions() {
@@ -120,10 +150,12 @@ final class SpeechSynthesizerService: NSObject {
         utterance.voice = voice ?? AVSpeechSynthesisVoice(language: "en-US")
         utterance.pitchMultiplier = 1.0
         utterance.volume = 1.0
+        utterance.associatedToken = token
 
         segmentStartTime = Date()
         onSegmentComplete = onComplete
         onInterruption = onInterrupt
+        callbackToken = token
 
         synthesizer.speak(utterance)
         isSpeaking = true
@@ -145,6 +177,7 @@ final class SpeechSynthesizerService: NSObject {
             onSegmentComplete = nil
             onInterruption = nil
             currentCancellationToken = nil
+            callbackToken = nil
         }
     }
 
@@ -163,6 +196,7 @@ final class SpeechSynthesizerService: NSObject {
     func stop() {
         currentCancellationToken?.cancel()
         currentCancellationToken = nil
+        callbackToken = nil
         synthesizer.stopSpeaking(at: .immediate)
         isSpeaking = false
         isPaused = false
@@ -213,16 +247,22 @@ extension SpeechSynthesizerService: AVSpeechSynthesizerDelegate {
         _ synthesizer: AVSpeechSynthesizer,
         didFinish utterance: AVSpeechUtterance
     ) {
+        // Capture the token associated with THIS utterance before entering async context
+        let utteranceToken = utterance.associatedToken
+
         Task { @MainActor in
-            // Check if the operation was cancelled before calling completion
-            guard currentCancellationToken?.isCancelled != true else {
-                // Already cancelled, clean up state
-                isSpeaking = false
-                isPaused = false
-                currentUtteranceProgress = 0
-                onSegmentComplete = nil
-                segmentStartTime = nil
-                currentCancellationToken = nil
+            // Verify this callback matches the current speech operation.
+            // Race condition fix: When navigation happens during speech:
+            // 1. Old speech is cancelled, new speech starts with new token
+            // 2. Old didFinish callback may still fire (was already queued)
+            // 3. By checking that the utterance's token matches callbackToken,
+            //    we ensure old callbacks don't trigger new callback handlers
+            guard let utteranceToken = utteranceToken,
+                  let activeCallbackToken = callbackToken,
+                  utteranceToken === activeCallbackToken,
+                  !utteranceToken.isCancelled else {
+                // This callback belongs to a cancelled/replaced speech operation
+                // State will be managed by the new operation or cancel handler
                 return
             }
 
@@ -241,6 +281,7 @@ extension SpeechSynthesizerService: AVSpeechSynthesizerDelegate {
             onSegmentComplete = nil
             segmentStartTime = nil
             currentCancellationToken = nil
+            callbackToken = nil
         }
     }
 
@@ -273,6 +314,7 @@ extension SpeechSynthesizerService: AVSpeechSynthesizerDelegate {
             onSegmentComplete = nil
             segmentStartTime = nil
             currentCancellationToken = nil
+            callbackToken = nil
         }
     }
 

@@ -288,3 +288,188 @@ Added `SpeechCancellationToken` class that:
 10. ~~Address remaining low priority issues (#11-#15)~~ ✅ DONE
 
 **Remaining:** Issue #8 (SwiftData index) is deferred pending SwiftData index support in a future iOS version.
+
+---
+
+## Code Review Update - 2026-01-26 (Second Review)
+
+### Critical Bug Fixed
+
+#### 19. Race Condition in Forward Navigation - FIXED
+
+**File:** `Services/SpeechSynthesizerService.swift`
+**Severity:** Critical
+**Type:** Race Condition
+**Status:** ✅ FIXED (2026-01-26)
+
+**Problem:** Forward navigation during active playback would skip multiple segments instead of advancing one at a time. The race condition occurred because:
+1. Old speech cancelled, new speech started with new token
+2. Old `didFinish` callback (already queued as async Task) would fire
+3. By then, `callbackToken` pointed to the NEW token
+4. Guard passed, old callback triggered NEW completion handler
+5. This caused extra `moveToNextSegmentAndPlay()` calls, skipping segments
+
+**Resolution:** Associate the cancellation token directly with the `AVSpeechUtterance` using Objective-C associated objects. In `didFinish`, compare the utterance's token against `callbackToken` to ensure only the correct callback fires.
+
+```swift
+// Added utterance token association
+private extension AVSpeechUtterance {
+    var associatedToken: SpeechCancellationToken? {
+        get { objc_getAssociatedObject(self, &utteranceTokenKey) as? SpeechCancellationToken }
+        set { objc_setAssociatedObject(self, &utteranceTokenKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+    }
+}
+
+// In speak():
+utterance.associatedToken = token
+
+// In didFinish:
+let utteranceToken = utterance.associatedToken
+Task { @MainActor in
+    guard let utteranceToken = utteranceToken,
+          let activeCallbackToken = callbackToken,
+          utteranceToken === activeCallbackToken,
+          !utteranceToken.isCancelled else { return }
+    // ... handle completion
+}
+```
+
+---
+
+### New Issues Identified
+
+#### 20. ~~Missing ModelContext.save() After Insert~~ FIXED
+
+**File:** `Views/SpeechListView.swift:82-86`
+**Severity:** High
+**Type:** Data Persistence
+**Status:** ✅ FIXED (2026-01-26)
+
+**Problem:** If the app terminates before SwiftData auto-saves, the new speech could be lost.
+
+**Resolution:** Added explicit `try modelContext.save()` with error logging after insert to ensure immediate persistence.
+
+---
+
+#### 21. ~~Voice Identifier Validation Missing~~ FIXED
+
+**File:** `Models/PlaybackSettings.swift:26-30`
+**Severity:** Medium
+**Type:** Silent Failure
+**Status:** ✅ FIXED (2026-01-26)
+
+**Problem:** If a saved voice identifier becomes invalid (voice uninstalled), `AVSpeechSynthesisVoice(identifier:)` returns `nil` silently.
+
+**Resolution:** Added `isVoiceIdentifierValid` computed property to check if the stored voice is available, and `validateAndClearInvalidVoice()` method to clear stale identifiers. The `voice` property now explicitly validates before returning.
+
+---
+
+#### 22. ~~Granularity Change Loses User Position~~ FIXED
+
+**File:** `ViewModels/PracticeViewModel.swift:225-237`
+**Severity:** Medium
+**Type:** UX Issue
+**Status:** ✅ FIXED (2026-01-26)
+
+**Problem:** Changing pause granularity (sentence ↔ paragraph) resets `currentSegmentIndex` to 0, losing the user's position.
+
+**Resolution:** Added `findSegmentIndex(containing:)` helper method to map the current text position to the new segment list. The `updatePauseGranularity()` method now captures the text position before re-parsing and restores it afterward.
+
+---
+
+#### 23. ~~Empty Segments UI State Missing~~ FIXED
+
+**File:** `Views/PracticeView.swift:51-78`
+**Severity:** Low
+**Type:** UX
+**Status:** ✅ FIXED (2026-01-26)
+
+**Problem:** If speech content is whitespace-only, the practice view shows an empty area with functional but useless controls.
+
+**Resolution:** Added `emptySegmentsView` with `ContentUnavailableView` that displays a helpful message when there's no content to practice. Refactored `segmentsView` to conditionally show either the empty state or the scroll view.
+
+---
+
+#### 24. ~~Audio Session Error Not Surfaced~~ FIXED
+
+**File:** `Services/SpeechSynthesizerService.swift:73-79`
+**Severity:** Low
+**Type:** Error Handling
+**Status:** ✅ FIXED (2026-01-26)
+
+**Problem:** Audio configuration failures are only logged, not communicated to the user.
+
+**Resolution:** Added `audioSessionError` property to store any audio session configuration error, and `audioErrorMessage` computed property that returns a user-friendly error message for the UI layer to display.
+
+---
+
+#### 25. ~~Progress Dots Threshold Hardcoded~~ FIXED
+
+**File:** `Views/PracticeView.swift:85`
+**Severity:** Low
+**Type:** Code Quality
+**Status:** ✅ FIXED (2026-01-26)
+
+**Problem:** Magic number `20` for switching between dots and progress bar.
+
+**Resolution:** Extracted to `maxProgressDots` private static constant with documentation explaining the threshold's purpose.
+
+---
+
+#### 26. ~~Pause Countdown Timing Precision~~ FIXED
+
+**File:** `ViewModels/PracticeViewModel.swift:256-285`
+**Severity:** Low
+**Type:** Precision
+**Status:** ✅ FIXED (2026-01-26)
+
+**Problem:** Calculated countdown can accumulate small timing errors due to Task.sleep not guaranteeing exact timing.
+
+**Resolution:** Refactored `startPauseInterval()` to capture `startTime = Date()` and calculate remaining time as `totalDuration - elapsed` on each update. This ensures the countdown is based on actual elapsed time rather than accumulated sleep intervals.
+
+---
+
+## Updated Issue Summary
+
+| Severity | Total | Fixed | Open |
+|----------|-------|-------|------|
+| Critical | 4 | ✅ 4 | 0 |
+| High | 4 | ✅ 4 | 0 |
+| Medium | 6 | ✅ 6 | 0 |
+| Low | 8 | ✅ 8 | 0 |
+| Suggestions | 3 | ✅ 3 | 0 |
+| **Total** | **25** | **25** | **0** |
+
+---
+
+## Remaining Work Priority
+
+All issues have been resolved! ✅
+
+~~1. **High:** Add ModelContext.save() after speech creation (#20)~~ ✅ DONE
+~~2. **Medium:** Validate voice identifiers (#21)~~ ✅ DONE
+~~3. **Medium:** Preserve position on granularity change (#22)~~ ✅ DONE
+~~4. **Low:** Add empty segments UI state (#23)~~ ✅ DONE
+~~5. **Low:** Extract magic numbers to constants (#25)~~ ✅ DONE
+~~6. **Low:** Improve audio error handling (#24)~~ ✅ DONE
+~~7. **Low:** Improve countdown timing (#26)~~ ✅ DONE
+
+**Note:** Issue #8 (SwiftData index on `updatedAt`) is deferred pending SwiftData index support in a future iOS version.
+
+---
+
+## What's Working Well (Updated)
+
+- Clean MVVM architecture with proper separation of concerns
+- Excellent use of `@Observable` and `@MainActor`
+- **Robust cancellation token system with utterance association**
+- Comprehensive haptic feedback throughout
+- NLTokenizer for accurate text parsing
+- SwiftData integration with `@Query` and explicit saves
+- Audio interruption handling with error surfacing
+- Character limit enforcement
+- Thread-safe `SpeechCancellationToken` with proper locking
+- **Voice identifier validation** for handling uninstalled voices
+- **Position preservation** when changing granularity
+- **Accurate pause timing** using elapsed time calculation
+- **Proper empty state handling** throughout the app

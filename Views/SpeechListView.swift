@@ -82,6 +82,11 @@ struct SpeechListView: View {
     private func createSpeech(title: String) {
         let speech = Speech(title: title.isEmpty ? "Untitled Speech" : title)
         modelContext.insert(speech)
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to save new speech: \(error)")
+        }
         HapticManager.shared.playLightImpact()
     }
 

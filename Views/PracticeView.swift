@@ -5,6 +5,10 @@ struct PracticeView: View {
     @State private var viewModel: PracticeViewModel
     @State private var showingSettings = false
 
+    /// Maximum number of segments to show as individual progress dots.
+    /// Beyond this threshold, a progress bar is shown instead for better UX.
+    private static let maxProgressDots = 20
+
     init(speech: Speech) {
         _viewModel = State(initialValue: PracticeViewModel(speech: speech))
     }
@@ -49,6 +53,24 @@ struct PracticeView: View {
     // MARK: - Segments View
 
     private var segmentsView: some View {
+        Group {
+            if viewModel.segments.isEmpty {
+                emptySegmentsView
+            } else {
+                segmentsScrollView
+            }
+        }
+    }
+
+    private var emptySegmentsView: some View {
+        ContentUnavailableView {
+            Label("No Content", systemImage: "text.justify.left")
+        } description: {
+            Text("This speech has no content to practice. Add some text to get started.")
+        }
+    }
+
+    private var segmentsScrollView: some View {
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(spacing: 16) {
@@ -81,8 +103,8 @@ struct PracticeView: View {
 
     private var progressView: some View {
         VStack(spacing: 8) {
-            // Progress dots
-            if viewModel.segments.count <= 20 {
+            // Progress dots (use dots for small counts, progress bar for large)
+            if viewModel.segments.count <= Self.maxProgressDots {
                 progressDots
             } else {
                 ProgressView(value: viewModel.progress)

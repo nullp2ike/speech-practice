@@ -226,14 +226,33 @@ final class PracticeViewModel {
         let wasPlaying = isPlaying
         stop()
 
+        // Capture the current text position before re-parsing
+        let currentTextPosition = currentSegment?.range.lowerBound
+
         settings.pauseGranularity = granularity
         // didSet on settings handles save()
 
         parseSegments()
 
+        // Restore position by finding the segment that contains the previous position
+        if let position = currentTextPosition {
+            currentSegmentIndex = findSegmentIndex(containing: position) ?? 0
+        }
+
         if wasPlaying {
             play()
         }
+    }
+
+    /// Finds the segment index that contains the given text position.
+    private func findSegmentIndex(containing position: String.Index) -> Int? {
+        for (index, segment) in segments.enumerated() {
+            if segment.range.contains(position) || segment.range.lowerBound >= position {
+                return index
+            }
+        }
+        // If position is past all segments, return the last segment
+        return segments.isEmpty ? nil : segments.count - 1
     }
 
     func updateVoice(_ voiceIdentifier: String?) {
@@ -257,29 +276,34 @@ final class PracticeViewModel {
         isInPauseInterval = true
         pauseTimeRemaining = duration
 
-        // Capture all values at task creation to avoid race conditions
+        // Capture values at task creation to avoid race conditions
         let updateInterval = Self.pauseUpdateInterval
         let totalDuration = duration
-        let steps = Int(totalDuration / updateInterval)
+        let startTime = Date()
 
         pauseTask = Task { [weak self] in
-            for i in 0..<steps {
-                guard !Task.isCancelled else { return }
+            while !Task.isCancelled {
                 try? await Task.sleep(for: .milliseconds(Int(updateInterval * 1000)))
+                guard !Task.isCancelled else { return }
+
+                // Calculate remaining time based on elapsed time from start for accuracy
+                let elapsed = Date().timeIntervalSince(startTime)
+                let remaining = totalDuration - elapsed
+
+                if remaining <= 0 {
+                    await MainActor.run {
+                        guard let self = self else { return }
+                        self.isInPauseInterval = false
+                        self.pauseTimeRemaining = 0
+                        self.moveToNextSegmentAndPlay()
+                    }
+                    return
+                }
 
                 await MainActor.run {
                     guard let self = self, !Task.isCancelled else { return }
-                    self.pauseTimeRemaining = totalDuration - (Double(i + 1) * updateInterval)
+                    self.pauseTimeRemaining = remaining
                 }
-            }
-
-            guard !Task.isCancelled else { return }
-
-            await MainActor.run {
-                guard let self = self else { return }
-                self.isInPauseInterval = false
-                self.pauseTimeRemaining = 0
-                self.moveToNextSegmentAndPlay()
             }
         }
     }
