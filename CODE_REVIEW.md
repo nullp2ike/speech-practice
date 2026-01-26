@@ -55,67 +55,42 @@ The codebase is well-structured with clear separation of concerns (MVVM). Howeve
 
 ## High Priority Issues
 
-### 4. Thread safety: Combine subscriptions on @Observable
+### 4. ~~Thread safety: Combine subscriptions on @Observable~~ FIXED
 
-**File:** `ViewModels/PracticeViewModel.swift:87-99`
+**File:** `ViewModels/PracticeViewModel.swift`
 **Severity:** High
 **Type:** Architecture
-
-```swift
-synthesizer.$isSpeaking
-    .receive(on: DispatchQueue.main)
-    .sink { [weak self] isSpeaking in
-        self?.isPlaying = isSpeaking || (self?.isInPauseInterval ?? false)
-    }
-    .store(in: &cancellables)
-```
+**Status:** ✅ FIXED (2026-01-26)
 
 **Problem:** Using Combine's `.sink` with `@Observable` is redundant and can cause issues. `@Observable` already provides automatic observation through Swift's observation system.
 
-**Fix:** Remove Combine subscriptions and directly observe the synthesizer's properties, or refactor to use a callback-based approach.
+**Resolution:** Removed Combine subscriptions entirely. Converted `SpeechSynthesizerService` from `ObservableObject` with `@Published` to `@Observable`. State is now synced via callbacks.
 
 ---
 
-### 5. Missing audio interruption handling
+### 5. ~~Missing audio interruption handling~~ FIXED
 
 **File:** `Services/SpeechSynthesizerService.swift`
 **Severity:** High
 **Type:** Missing Feature
+**Status:** ✅ FIXED (2026-01-26)
 
 **Problem:** No handling for audio interruptions (phone calls, Siri, other apps). The app should observe `AVAudioSession.interruptionNotification` and pause/resume appropriately.
 
-**Fix:** Add notification observer:
-```swift
-NotificationCenter.default.addObserver(
-    self,
-    selector: #selector(handleInterruption),
-    name: AVAudioSession.interruptionNotification,
-    object: nil
-)
-```
+**Resolution:** Added `observeAudioInterruptions()` method that registers for `AVAudioSession.interruptionNotification`. The handler pauses speech on interruption start and optionally resumes when interruption ends with `.shouldResume` option.
 
 ---
 
-### 6. Race condition in pause interval
+### 6. ~~Race condition in pause interval~~ FIXED
 
-**File:** `ViewModels/PracticeViewModel.swift:248-266`
+**File:** `ViewModels/PracticeViewModel.swift`
 **Severity:** High
 **Type:** Concurrency Bug
-
-```swift
-pauseTask = Task { [weak self] in
-    let steps = Int(duration * 10)
-    for i in 0..<steps {
-        guard !Task.isCancelled else { return }
-        try? await Task.sleep(for: .milliseconds(100))
-        // ...
-    }
-}
-```
+**Status:** ✅ FIXED (2026-01-26)
 
 **Problem:** The `pauseTask` uses `[weak self]` but the closure accesses `duration` after awaits. If granularity changes mid-pause, behavior is undefined.
 
-**Fix:** Capture all needed values at task creation time and add proper cancellation checks.
+**Resolution:** All values (`updateInterval`, `totalDuration`, `steps`) are now captured at task creation time. Added a `pauseUpdateInterval` constant to replace magic numbers. Added proper `guard let self` checks after await points.
 
 ---
 
@@ -390,11 +365,11 @@ Allow cancelling speech synthesis with proper cleanup instead of relying solely 
 | Severity | Count | Fixed |
 |----------|-------|-------|
 | Critical | 3 | ✅ 3 |
-| High | 3 | 0 |
+| High | 3 | ✅ 3 |
 | Medium | 4 | 0 |
 | Low | 5 | 0 |
 | Suggestions | 3 | 0 |
-| **Total** | **18** | **3** |
+| **Total** | **18** | **6** |
 
 ---
 
@@ -403,8 +378,8 @@ Allow cancelling speech synthesis with proper cleanup instead of relying solely 
 1. ~~Fix paragraph parsing bug (#1)~~ ✅ DONE
 2. ~~Fix speech list refresh issue (#2)~~ ✅ DONE
 3. ~~Fix memory management for callbacks (#3)~~ ✅ DONE
-4. Add audio interruption handling (#5)
-5. Remove redundant Combine subscriptions (#4)
-6. Fix race condition in pause interval (#6)
+4. ~~Add audio interruption handling (#5)~~ ✅ DONE
+5. ~~Remove redundant Combine subscriptions (#4)~~ ✅ DONE
+6. ~~Fix race condition in pause interval (#6)~~ ✅ DONE
 7. Fix empty state vs no search results (#10)
 8. Address remaining medium/low issues

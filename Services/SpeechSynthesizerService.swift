@@ -1,28 +1,32 @@
 import Foundation
 import AVFoundation
-import Combine
 
 @MainActor
-final class SpeechSynthesizerService: NSObject, ObservableObject {
+@Observable
+final class SpeechSynthesizerService: NSObject {
     private let synthesizer = AVSpeechSynthesizer()
 
-    @Published private(set) var isSpeaking = false
-    @Published private(set) var isPaused = false
-    @Published private(set) var currentUtteranceProgress: Double = 0
+    private(set) var isSpeaking = false
+    private(set) var isPaused = false
+    private(set) var currentUtteranceProgress: Double = 0
 
     private var segmentStartTime: Date?
     private var onSegmentComplete: ((TimeInterval) -> Void)?
+    private var onInterruption: (() -> Void)?
 
     override init() {
         super.init()
         synthesizer.delegate = self
         configureAudioSession()
+        observeAudioInterruptions()
     }
 
     /// Clears all callbacks and stops synthesis. Call this when the owning view disappears.
     func cleanup() {
         stop()
         onSegmentComplete = nil
+        onInterruption = nil
+        NotificationCenter.default.removeObserver(self)
     }
 
     private func configureAudioSession() {
@@ -34,11 +38,48 @@ final class SpeechSynthesizerService: NSObject, ObservableObject {
         }
     }
 
+    private func observeAudioInterruptions() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleAudioInterruption),
+            name: AVAudioSession.interruptionNotification,
+            object: AVAudioSession.sharedInstance()
+        )
+    }
+
+    @objc private func handleAudioInterruption(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
+              let type = AVAudioSession.InterruptionType(rawValue: typeValue) else {
+            return
+        }
+
+        Task { @MainActor in
+            switch type {
+            case .began:
+                if isSpeaking && !isPaused {
+                    pause()
+                    onInterruption?()
+                }
+            case .ended:
+                if let optionsValue = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt {
+                    let options = AVAudioSession.InterruptionOptions(rawValue: optionsValue)
+                    if options.contains(.shouldResume) && isPaused {
+                        resume()
+                    }
+                }
+            @unknown default:
+                break
+            }
+        }
+    }
+
     func speak(
         _ text: String,
         rate: Float,
         voice: AVSpeechSynthesisVoice?,
-        onComplete: @escaping (TimeInterval) -> Void
+        onComplete: @escaping (TimeInterval) -> Void,
+        onInterrupt: (() -> Void)? = nil
     ) {
         stop()
 
@@ -50,6 +91,7 @@ final class SpeechSynthesizerService: NSObject, ObservableObject {
 
         segmentStartTime = Date()
         onSegmentComplete = onComplete
+        onInterruption = onInterrupt
 
         synthesizer.speak(utterance)
         isSpeaking = true

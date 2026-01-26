@@ -1,12 +1,11 @@
 import Foundation
 import SwiftUI
 import AVFoundation
-import Combine
 
 @MainActor
 @Observable
 final class PracticeViewModel {
-    // MARK: - Published State
+    // MARK: - State
 
     private(set) var segments: [SpeechSegment] = []
     private(set) var currentSegmentIndex: Int = 0
@@ -28,7 +27,10 @@ final class PracticeViewModel {
     private let textParser: TextParser
 
     private var pauseTask: Task<Void, Never>?
-    private var cancellables = Set<AnyCancellable>()
+
+    // MARK: - Constants
+
+    private static let pauseUpdateInterval: TimeInterval = 0.1
 
     // MARK: - Computed Properties
 
@@ -73,7 +75,6 @@ final class PracticeViewModel {
         self.settings = PlaybackSettings.load()
 
         parseSegments()
-        observeSynthesizer()
     }
 
     // MARK: - Setup
@@ -83,20 +84,9 @@ final class PracticeViewModel {
         currentSegmentIndex = 0
     }
 
-    private func observeSynthesizer() {
-        synthesizer.$isSpeaking
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isSpeaking in
-                self?.isPlaying = isSpeaking || (self?.isInPauseInterval ?? false)
-            }
-            .store(in: &cancellables)
-
-        synthesizer.$isPaused
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isPaused in
-                self?.isPaused = isPaused
-            }
-            .store(in: &cancellables)
+    private func syncStateFromSynthesizer() {
+        isPlaying = synthesizer.isSpeaking || isInPauseInterval
+        isPaused = synthesizer.isPaused
     }
 
     // MARK: - Playback Controls
@@ -109,17 +99,27 @@ final class PracticeViewModel {
         synthesizer.speak(
             segment.text,
             rate: settings.rate,
-            voice: settings.voice
-        ) { [weak self] duration in
-            self?.handleSegmentComplete(duration: duration)
-        }
+            voice: settings.voice,
+            onComplete: { [weak self] duration in
+                self?.handleSegmentComplete(duration: duration)
+            },
+            onInterrupt: { [weak self] in
+                self?.handleInterruption()
+            }
+        )
 
         isPlaying = true
+    }
+
+    private func handleInterruption() {
+        isPaused = true
+        HapticManager.shared.playLightImpact()
     }
 
     func pause() {
         cancelPauseInterval()
         synthesizer.pause()
+        isPaused = true
         HapticManager.shared.playLightImpact()
     }
 
@@ -130,6 +130,7 @@ final class PracticeViewModel {
             moveToNextSegmentAndPlay()
         } else {
             synthesizer.resume()
+            isPaused = false
         }
         HapticManager.shared.playLightImpact()
     }
@@ -245,23 +246,29 @@ final class PracticeViewModel {
         isInPauseInterval = true
         pauseTimeRemaining = duration
 
+        // Capture all values at task creation to avoid race conditions
+        let updateInterval = Self.pauseUpdateInterval
+        let totalDuration = duration
+        let steps = Int(totalDuration / updateInterval)
+
         pauseTask = Task { [weak self] in
-            let steps = Int(duration * 10) // Update every 0.1 seconds
             for i in 0..<steps {
                 guard !Task.isCancelled else { return }
-                try? await Task.sleep(for: .milliseconds(100))
+                try? await Task.sleep(for: .milliseconds(Int(updateInterval * 1000)))
 
                 await MainActor.run {
-                    self?.pauseTimeRemaining = duration - (Double(i + 1) / 10.0)
+                    guard let self = self, !Task.isCancelled else { return }
+                    self.pauseTimeRemaining = totalDuration - (Double(i + 1) * updateInterval)
                 }
             }
 
             guard !Task.isCancelled else { return }
 
             await MainActor.run {
-                self?.isInPauseInterval = false
-                self?.pauseTimeRemaining = 0
-                self?.moveToNextSegmentAndPlay()
+                guard let self = self else { return }
+                self.isInPauseInterval = false
+                self.pauseTimeRemaining = 0
+                self.moveToNextSegmentAndPlay()
             }
         }
     }
@@ -289,7 +296,6 @@ final class PracticeViewModel {
     func cleanup() {
         cancelPauseInterval()
         synthesizer.cleanup()
-        cancellables.removeAll()
         isPlaying = false
         isPaused = false
     }
