@@ -105,11 +105,6 @@ final class PracticeViewModel {
         currentSegmentIndex = 0
     }
 
-    private func syncStateFromSynthesizer() {
-        isPlaying = synthesizer.isSpeaking || isInPauseInterval
-        isPaused = synthesizer.isPaused
-    }
-
     // MARK: - Playback Controls
 
     func play() {

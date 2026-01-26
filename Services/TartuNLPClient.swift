@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 /// Represents a voice available from the TartuNLP TTS API.
 struct EstonianVoice: Identifiable, Sendable {
@@ -43,6 +44,8 @@ enum TartuNLPError: LocalizedError {
         }
     }
 }
+
+private let tartuNLPLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "SpeechPractice", category: "TartuNLPClient")
 
 /// Client for the TartuNLP Estonian text-to-speech API.
 /// API Documentation: https://api.tartunlp.ai/text-to-speech/v2
@@ -173,7 +176,7 @@ actor TartuNLPClient {
                 }
             }
         } catch {
-            print("Failed to parse voices response: \(error)")
+            tartuNLPLogger.warning("Failed to parse voices response: \(error.localizedDescription)")
         }
 
         // Return default voices if parsing fails

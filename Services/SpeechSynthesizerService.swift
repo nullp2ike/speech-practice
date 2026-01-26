@@ -1,6 +1,7 @@
 import Foundation
 import AVFoundation
 import ObjectiveC
+import os.log
 
 // MARK: - Utterance Token Association
 
@@ -17,6 +18,8 @@ private extension AVSpeechUtterance {
         }
     }
 }
+
+private let speechSynthesizerLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "SpeechPractice", category: "SpeechSynthesizerService")
 
 @MainActor
 @Observable
@@ -61,7 +64,7 @@ final class SpeechSynthesizerService: NSObject, SpeechSynthesizing {
             audioSessionError = nil
         } catch {
             audioSessionError = error
-            print("Failed to configure audio session: \(error)")
+            speechSynthesizerLogger.error("Failed to configure audio session: \(error.localizedDescription)")
         }
     }
 
@@ -194,14 +197,6 @@ final class SpeechSynthesizerService: NSObject, SpeechSynthesizing {
         currentUtteranceProgress = 0
         segmentStartTime = nil
         onSegmentComplete = nil
-    }
-
-    func togglePlayPause() {
-        if isPaused {
-            resume()
-        } else if isSpeaking {
-            pause()
-        }
     }
 
     // MARK: - Voice Selection

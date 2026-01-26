@@ -65,11 +65,17 @@ struct PracticeView: View {
                 .font(.footnote)
             Spacer()
             Button {
-                viewModel.play() // Retry
+                viewModel.play() // Retry - play() clears playbackError before attempting
             } label: {
-                Text("Retry")
-                    .font(.footnote.bold())
+                if viewModel.isPlaying {
+                    ProgressView()
+                        .scaleEffect(0.7)
+                } else {
+                    Text("Retry")
+                        .font(.footnote.bold())
+                }
             }
+            .disabled(viewModel.isPlaying)
         }
         .padding(.horizontal)
         .padding(.vertical, 8)

@@ -10,7 +10,8 @@ final class EstonianTTSService: SpeechSynthesizing {
 
     private(set) var isSpeaking = false
     private(set) var isPaused = false
-    private(set) var playbackError: String?
+    /// Error message from TTS synthesis (API errors, network issues, etc.)
+    private(set) var synthesisError: String?
 
     private var currentToken: SpeechCancellationToken?
     private var synthesisTask: Task<Void, Never>?
@@ -18,7 +19,10 @@ final class EstonianTTSService: SpeechSynthesizing {
     /// In-memory cache for synthesized audio segments.
     /// Key: "\(text)_\(speaker)_\(speed)"
     private var audioCache: [String: CacheEntry] = [:]
+    private var currentCacheSize: Int = 0
     private static let maxCacheEntries = 50
+    /// Maximum cache size in bytes (10MB)
+    private static let maxCacheSizeBytes = 10 * 1024 * 1024
 
     /// Cache entry with timestamp for LRU eviction.
     private struct CacheEntry {
@@ -58,7 +62,7 @@ final class EstonianTTSService: SpeechSynthesizing {
     // MARK: - SpeechSynthesizing Protocol
 
     var audioErrorMessage: String? {
-        playbackError ?? audioPlayer.audioErrorMessage
+        synthesisError ?? audioPlayer.audioErrorMessage
     }
 
     @discardableResult
@@ -73,7 +77,7 @@ final class EstonianTTSService: SpeechSynthesizing {
 
         let token = SpeechCancellationToken()
         currentToken = token
-        playbackError = nil
+        synthesisError = nil
 
         let speaker = voiceIdentifier ?? EstonianVoice.defaultVoice.id
         let speed = TartuNLPClient.mapRateToSpeed(rate)
@@ -130,7 +134,7 @@ final class EstonianTTSService: SpeechSynthesizing {
             } catch {
                 guard !token.isCancelled else { return }
 
-                self.playbackError = error.localizedDescription
+                self.synthesisError = error.localizedDescription
                 self.isSpeaking = false
                 self.isPaused = false
                 self.currentToken = nil
@@ -181,6 +185,7 @@ final class EstonianTTSService: SpeechSynthesizing {
         stop()
         audioPlayer.cleanup()
         audioCache.removeAll()
+        currentCacheSize = 0
     }
 
     // MARK: - Private Helpers
@@ -190,13 +195,18 @@ final class EstonianTTSService: SpeechSynthesizing {
     }
 
     private func cacheAudio(data: Data, forKey key: String) {
-        // Evict oldest entries if cache is full (LRU eviction)
-        if audioCache.count >= Self.maxCacheEntries {
+        // Evict oldest entries if cache exceeds entry count or memory limit (LRU eviction)
+        while audioCache.count >= Self.maxCacheEntries ||
+              (currentCacheSize + data.count > Self.maxCacheSizeBytes && !audioCache.isEmpty) {
             // Find the least recently used entry
-            if let lruKey = audioCache.min(by: { $0.value.lastAccessTime < $1.value.lastAccessTime })?.key {
-                audioCache.removeValue(forKey: lruKey)
+            if let lruKey = audioCache.min(by: { $0.value.lastAccessTime < $1.value.lastAccessTime })?.key,
+               let removed = audioCache.removeValue(forKey: lruKey) {
+                currentCacheSize -= removed.data.count
+            } else {
+                break
             }
         }
         audioCache[key] = CacheEntry(data: data, lastAccessTime: Date())
+        currentCacheSize += data.count
     }
 }

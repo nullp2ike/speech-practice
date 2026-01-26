@@ -1,5 +1,8 @@
 import Foundation
 import AVFoundation
+import os.log
+
+private let audioPlayerLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "SpeechPractice", category: "AudioPlayerService")
 
 /// Service for playing WAV audio data using AVAudioPlayer.
 /// Tracks playback duration and handles interruptions.
@@ -34,7 +37,7 @@ final class AudioPlayerService: NSObject {
             audioSessionError = nil
         } catch {
             audioSessionError = error
-            print("AudioPlayerService: Failed to configure audio session: \(error)")
+            audioPlayerLogger.error("Failed to configure audio session: \(error.localizedDescription)")
         }
     }
 
@@ -177,7 +180,7 @@ extension AudioPlayerService: AVAudioPlayerDelegate {
 
     nonisolated func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
         Task { @MainActor in
-            print("AudioPlayerService: Decode error: \(error?.localizedDescription ?? "unknown")")
+            audioPlayerLogger.error("Decode error: \(error?.localizedDescription ?? "unknown")")
             // Treat decode error as completion with 0 duration
             let completionHandler = onComplete
 

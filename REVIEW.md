@@ -90,7 +90,7 @@ Estonian voices use IDs like `"mari"`, while AVSpeech uses identifiers like `"co
 
 ## Low Priority Issues
 
-### 6. Unused method
+### 6. ~~Unused method~~ FIXED
 **File:** `SpeechSynthesizerService.swift:199-205`
 
 ```swift
@@ -107,9 +107,11 @@ This method exists on `SpeechSynthesizerService` but isn't part of the `SpeechSy
 
 **Recommendation:** Remove it or add to protocol if needed.
 
+**Fix:** Removed the unused `togglePlayPause()` method from `SpeechSynthesizerService`.
+
 ---
 
-### 7. Print statements for debugging
+### 7. ~~Print statements for debugging~~ FIXED
 **Files:** `TartuNLPClient.swift:165`, `AudioPlayerService.swift:37,172`
 
 ```swift
@@ -119,9 +121,11 @@ print("AudioPlayerService: Failed to configure audio session: \(error)")
 
 Production code should use `os.Logger` for structured logging.
 
+**Fix:** Replaced all print statements with `os.Logger` in `SpeechSynthesizerService`, `TartuNLPClient`, and `AudioPlayerService`.
+
 ---
 
-### 8. `syncStateFromSynthesizer()` is never called
+### 8. ~~`syncStateFromSynthesizer()` is never called~~ FIXED
 **File:** `PracticeViewModel.swift:102-105`
 
 ```swift
@@ -135,9 +139,11 @@ This method is defined but never invoked.
 
 **Recommendation:** Remove dead code.
 
+**Fix:** Removed the unused `syncStateFromSynthesizer()` method.
+
 ---
 
-### 9. Error banner retry doesn't clear error first
+### 9. ~~Error banner retry doesn't clear error first~~ FIXED
 **File:** `PracticeView.swift:67-68`
 
 ```swift
@@ -148,25 +154,34 @@ Button {
 
 While `play()` does clear `playbackError`, it would be clearer to show a loading state during retry.
 
+**Fix:** Added a loading indicator (ProgressView) to the retry button when playback is in progress. The button is also disabled during retry to prevent double-taps.
+
 ---
 
-### 10. Potential memory issue with large audio cache
+### 10. ~~Potential memory issue with large audio cache~~ FIXED
 
 With 50 cached WAV segments, memory usage could be significant (WAV is uncompressed). A 10-second segment at 22kHz mono is ~440KB.
 
 **Recommendation:** Consider adding a memory limit instead of just entry count, or use file-based caching.
 
+**Fix:** Added a 10MB memory limit (`maxCacheSizeBytes`) to the audio cache in addition to the entry count limit. The cache now tracks `currentCacheSize` and evicts LRU entries when either limit is exceeded.
+
 ---
 
 ## Style/Consistency Issues
 
-### 11. Inconsistent error property naming
+### 11. ~~Inconsistent error property naming~~ FIXED
 
 - `SpeechSynthesizerService`: `audioSessionError` (Error) + `audioErrorMessage` (String?)
 - `AudioPlayerService`: `audioSessionError` (Error) + `audioErrorMessage` (String?)
 - `EstonianTTSService`: `playbackError` (String?) + `audioErrorMessage` (computed)
 
 **Recommendation:** Standardize naming across services.
+
+**Fix:** Renamed `playbackError` to `synthesisError` in `EstonianTTSService`. The naming now follows a consistent pattern:
+- `audioSessionError` (Error?) - for audio session configuration errors (SpeechSynthesizerService, AudioPlayerService)
+- `synthesisError` (String?) - for TTS synthesis errors (EstonianTTSService)
+- `audioErrorMessage` (String?) - computed property exposing user-friendly error message (all services, required by protocol)
 
 ---
 
@@ -188,6 +203,11 @@ With 50 cached WAV segments, memory usage could be significant (WAV is uncompres
 |----------|-------|--------|
 | Critical | 2 | **All Fixed** |
 | Medium | 3 | **All Fixed** |
-| Low | 5 | Open |
+| Low | 5 | **All Fixed** |
+| Style | 1 | **All Fixed** |
 
-The implementation is functional and well-architected. ~~The critical issues around cache eviction and async error handling should be addressed.~~ Critical issues have been resolved. Medium priority issues (duplicate defaults, missing interruption notification, voice identifier mismatch) have also been resolved.
+The implementation is functional and well-architected. All issues have been resolved:
+- Critical: Cache eviction and async error handling
+- Medium: Duplicate defaults, missing interruption notification, voice identifier mismatch
+- Low: Unused methods, print statements, dead code, retry UX, cache memory
+- Style: Inconsistent error property naming
