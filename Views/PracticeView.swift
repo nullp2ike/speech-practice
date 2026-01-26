@@ -15,6 +15,11 @@ struct PracticeView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            // Error banner (if any)
+            if let error = viewModel.playbackError {
+                errorBanner(error)
+            }
+
             // Segments display
             segmentsView
                 .frame(maxHeight: .infinity)
@@ -48,6 +53,27 @@ struct PracticeView: View {
         .onDisappear {
             viewModel.cleanup()
         }
+    }
+
+    // MARK: - Error Banner
+
+    private func errorBanner(_ message: String) -> some View {
+        HStack {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(.yellow)
+            Text(message)
+                .font(.footnote)
+            Spacer()
+            Button {
+                viewModel.play() // Retry
+            } label: {
+                Text("Retry")
+                    .font(.footnote.bold())
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+        .background(Color.red.opacity(0.1))
     }
 
     // MARK: - Segments View

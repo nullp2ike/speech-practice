@@ -49,12 +49,7 @@ final class EstonianTTSService: SpeechSynthesizing {
         } catch {
             voicesLoadError = error.localizedDescription
             // Use default voices on error
-            availableVoices = [
-                EstonianVoice(id: "mari", name: "mari", displayName: "Mari"),
-                EstonianVoice(id: "tambet", name: "tambet", displayName: "Tambet"),
-                EstonianVoice(id: "liivika", name: "liivika", displayName: "Liivika"),
-                EstonianVoice(id: "kalev", name: "kalev", displayName: "Kalev")
-            ]
+            availableVoices = EstonianVoice.defaultVoices
         }
 
         isLoadingVoices = false

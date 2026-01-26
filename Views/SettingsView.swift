@@ -46,13 +46,23 @@ struct SettingsView: View {
                 }
 
                 Section("Voice") {
-                    VoicePicker(
-                        selectedVoiceIdentifier: Binding(
-                            get: { viewModel.settings.voiceIdentifier },
-                            set: { viewModel.updateVoice($0) }
-                        ),
-                        language: viewModel.speech.language
-                    )
+                    if viewModel.usesEstonianTTS {
+                        EstonianVoicePicker(
+                            selectedVoiceIdentifier: Binding(
+                                get: { viewModel.settings.voiceIdentifier },
+                                set: { viewModel.updateVoice($0) }
+                            ),
+                            estonianService: viewModel.estonianTTSService
+                        )
+                    } else {
+                        VoicePicker(
+                            selectedVoiceIdentifier: Binding(
+                                get: { viewModel.settings.voiceIdentifier },
+                                set: { viewModel.updateVoice($0) }
+                            ),
+                            language: viewModel.speech.language
+                        )
+                    }
                 }
 
                 Section {
@@ -108,6 +118,69 @@ struct VoiceRow: View {
                 Text("Enhanced")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+// MARK: - Estonian Voice Picker
+
+struct EstonianVoicePicker: View {
+    @Binding var selectedVoiceIdentifier: String?
+    let estonianService: EstonianTTSService?
+
+    var body: some View {
+        if let service = estonianService {
+            EstonianVoicePickerContent(
+                selectedVoiceIdentifier: $selectedVoiceIdentifier,
+                service: service
+            )
+        } else {
+            Text("Estonian voices unavailable")
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+struct EstonianVoicePickerContent: View {
+    @Binding var selectedVoiceIdentifier: String?
+    let service: EstonianTTSService
+
+    var body: some View {
+        Group {
+            if service.isLoadingVoices {
+                HStack {
+                    Text("Loading voices...")
+                    Spacer()
+                    ProgressView()
+                }
+            } else if let error = service.voicesLoadError {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Failed to load voices")
+                        .foregroundStyle(.red)
+                    Text(error)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Button("Retry") {
+                        Task {
+                            await service.loadAvailableVoices()
+                        }
+                    }
+                    .font(.caption)
+                }
+            } else {
+                Picker("Voice", selection: $selectedVoiceIdentifier) {
+                    Text("Default (Mari)").tag(nil as String?)
+
+                    ForEach(service.availableVoices) { voice in
+                        Text(voice.displayName).tag(voice.id as String?)
+                    }
+                }
+            }
+        }
+        .task {
+            if service.availableVoices.isEmpty && !service.isLoadingVoices {
+                await service.loadAvailableVoices()
             }
         }
     }

@@ -24,6 +24,11 @@
 		C4DE142583E0A67688FD6F31 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7F77F167B21FCA5DA86F100B /* Assets.xcassets */; };
 		F8EA56ABF9AD0C95D2D495A7 /* SpeechEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D74FC80DCD5D2E9784EC01E /* SpeechEditorView.swift */; };
 		FC92F35F0EE2BCA854576596 /* PlaybackSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38C166F716F67987DB013BE4 /* PlaybackSettings.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* SpeechSynthesizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F3 /* SpeechSynthesizing.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F4 /* TartuNLPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F5 /* TartuNLPClient.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F6 /* AudioPlayerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F7 /* AudioPlayerService.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F8 /* EstonianTTSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F9 /* EstonianTTSService.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1FA /* SpeechServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1FB /* SpeechServiceFactory.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +50,11 @@
 		B563EA98B8125549C172A830 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		D2765474FAD6EF88AB2A1267 /* SpeechSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechSegment.swift; sourceTree = "<group>"; };
 		F8CC7A69873F23FB9EF3A8A9 /* Speech.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Speech.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F3 /* SpeechSynthesizing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechSynthesizing.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F5 /* TartuNLPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TartuNLPClient.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F7 /* AudioPlayerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerService.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F9 /* EstonianTTSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EstonianTTSService.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1FB /* SpeechServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechServiceFactory.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -73,8 +83,13 @@
 		8CD4682E85F73625BCC58F7F /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				A1B2C3D4E5F6A7B8C9D0E1F7 /* AudioPlayerService.swift */,
+				A1B2C3D4E5F6A7B8C9D0E1F9 /* EstonianTTSService.swift */,
 				533FA39E7FB1BA9AF9D7E113 /* HapticManager.swift */,
+				A1B2C3D4E5F6A7B8C9D0E1FB /* SpeechServiceFactory.swift */,
+				A1B2C3D4E5F6A7B8C9D0E1F3 /* SpeechSynthesizing.swift */,
 				53283A2C73D0B6D4F5F9C2AE /* SpeechSynthesizerService.swift */,
+				A1B2C3D4E5F6A7B8C9D0E1F5 /* TartuNLPClient.swift */,
 				7FCBB55C8E233C37EA5AF782 /* TextParser.swift */,
 			);
 			path = Services;
@@ -199,7 +214,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1B2C3D4E5F6A7B8C9D0E1F6 /* AudioPlayerService.swift in Sources */,
 				4326B6B60CE721FC4B917F7F /* ContentView.swift in Sources */,
+				A1B2C3D4E5F6A7B8C9D0E1F8 /* EstonianTTSService.swift in Sources */,
 				58C7ADDF2EA3EB6F7C960E50 /* HapticManager.swift in Sources */,
 				FC92F35F0EE2BCA854576596 /* PlaybackSettings.swift in Sources */,
 				8C710CD502F7185D107995C5 /* PracticeView.swift in Sources */,
@@ -211,8 +228,11 @@
 				30288F857B01787DCD8FBC20 /* SpeechListView.swift in Sources */,
 				3D113BA3451543D4F4BC993D /* SpeechPracticeApp.swift in Sources */,
 				26ECF6A531AC2E408F3ACBA2 /* SpeechSegment.swift in Sources */,
+				A1B2C3D4E5F6A7B8C9D0E1FA /* SpeechServiceFactory.swift in Sources */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* SpeechSynthesizing.swift in Sources */,
 				4BAE892BE092379CDB4F9BDB /* SpeechSynthesizerService.swift in Sources */,
 				0005FE540C3E01A115A2863D /* String+Parsing.swift in Sources */,
+				A1B2C3D4E5F6A7B8C9D0E1F4 /* TartuNLPClient.swift in Sources */,
 				7C96127B8A5AB5155B5B0948 /* TextParser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -18,26 +18,9 @@ private extension AVSpeechUtterance {
     }
 }
 
-// MARK: - Speech Cancellation Token
-
-/// A token that allows cancellation of a speech synthesis operation.
-/// The token can be checked for cancellation status and cancelled from outside the service.
-final class SpeechCancellationToken: @unchecked Sendable {
-    private var _isCancelled = false
-    private let lock = NSLock()
-
-    var isCancelled: Bool {
-        lock.withLock { _isCancelled }
-    }
-
-    func cancel() {
-        lock.withLock { _isCancelled = true }
-    }
-}
-
 @MainActor
 @Observable
-final class SpeechSynthesizerService: NSObject {
+final class SpeechSynthesizerService: NSObject, SpeechSynthesizing {
     private let synthesizer = AVSpeechSynthesizer()
 
     private(set) var isSpeaking = false
@@ -128,7 +111,7 @@ final class SpeechSynthesizerService: NSObject {
     /// - Parameters:
     ///   - text: The text to speak
     ///   - rate: Speech rate (0.1 to 1.0)
-    ///   - voice: Optional voice to use
+    ///   - voiceIdentifier: Optional voice identifier to use
     ///   - onComplete: Called when speech finishes with the duration
     ///   - onInterrupt: Called when speech is interrupted
     /// - Returns: A cancellation token that can be used to cancel this specific speech operation
@@ -136,7 +119,7 @@ final class SpeechSynthesizerService: NSObject {
     func speak(
         _ text: String,
         rate: Float,
-        voice: AVSpeechSynthesisVoice?,
+        voiceIdentifier: String?,
         onComplete: @escaping (TimeInterval) -> Void,
         onInterrupt: (() -> Void)? = nil
     ) -> SpeechCancellationToken {
@@ -147,7 +130,15 @@ final class SpeechSynthesizerService: NSObject {
 
         let utterance = AVSpeechUtterance(string: text)
         utterance.rate = rate
-        utterance.voice = voice ?? AVSpeechSynthesisVoice(language: "en-US")
+
+        // Look up voice from identifier, or use default
+        if let identifier = voiceIdentifier,
+           let voice = AVSpeechSynthesisVoice(identifier: identifier) {
+            utterance.voice = voice
+        } else {
+            utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        }
+
         utterance.pitchMultiplier = 1.0
         utterance.volume = 1.0
         utterance.associatedToken = token

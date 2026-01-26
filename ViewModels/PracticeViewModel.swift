@@ -89,6 +89,12 @@ final class PracticeViewModel {
         self.textParser = .shared
         self.settings = PlaybackSettings.load()
 
+        // Clear voice identifier if it's incompatible with the current language
+        // (e.g., Estonian voice "mari" is invalid for English, and vice versa)
+        if !SpeechServiceFactory.isVoiceIdentifierValid(settings.voiceIdentifier, for: speech.language) {
+            settings.voiceIdentifier = nil
+        }
+
         parseSegments()
     }
 

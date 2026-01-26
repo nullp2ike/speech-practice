@@ -50,16 +50,18 @@ For Estonian TTS, errors occur asynchronously during the API call, but this chec
 
 ## Medium Issues
 
-### 3. Default voices duplicated in two places
+### 3. ~~Default voices duplicated in two places~~ FIXED
 **Files:** `TartuNLPClient.swift` and `EstonianTTSService.swift`
 
 The same fallback voices are defined in both `parseVoicesResponse()` (lines 169-174) and `loadAvailableVoices()` (lines 46-51).
 
 **Recommendation:** Extract to a single source of truth, e.g., a static property on `EstonianVoice`.
 
+**Fix:** Added `EstonianVoice.defaultVoices` static property as the single source of truth. Both `parseVoicesResponse()` and `loadAvailableVoices()` now reference this property.
+
 ---
 
-### 4. Missing `onInterruption` cleanup
+### 4. ~~Missing `onInterruption` cleanup~~ FIXED
 **File:** `AudioPlayerService.swift:136`
 
 ```swift
@@ -72,13 +74,17 @@ func stop() {
 
 This is correct, but `onInterrupt` is never called during `stop()`. If audio is playing and `stop()` is called, the caller doesn't know it was interrupted vs completed.
 
+**Fix:** Modified `stop()` to call `onInterrupt` when audio was actively playing. This allows callers to distinguish between natural completion (`onComplete`) and programmatic stop/interruption (`onInterrupt`).
+
 ---
 
-### 5. Voice identifier mismatch between services
+### 5. ~~Voice identifier mismatch between services~~ FIXED
 
 Estonian voices use IDs like `"mari"`, while AVSpeech uses identifiers like `"com.apple.voice.compact.en-US.Samantha"`. If a user switches a speech's language from Estonian to English, the saved `voiceIdentifier` will be invalid.
 
 **Recommendation:** Clear `voiceIdentifier` when language changes, or store voice identifiers per-language.
+
+**Fix:** Added `SpeechServiceFactory.isVoiceIdentifierValid(_:for:)` to validate voice identifiers against the current language. Added `EstonianVoice.knownVoiceIds` to identify Estonian voice IDs. `PracticeViewModel.init` now clears the voice identifier if it's incompatible with the speech's language.
 
 ---
 
@@ -181,7 +187,7 @@ With 50 cached WAV segments, memory usage could be significant (WAV is uncompres
 | Severity | Count | Status |
 |----------|-------|--------|
 | Critical | 2 | **All Fixed** |
-| Medium | 3 | Open |
+| Medium | 3 | **All Fixed** |
 | Low | 5 | Open |
 
-The implementation is functional and well-architected. ~~The critical issues around cache eviction and async error handling should be addressed.~~ Critical issues have been resolved.
+The implementation is functional and well-architected. ~~The critical issues around cache eviction and async error handling should be addressed.~~ Critical issues have been resolved. Medium priority issues (duplicate defaults, missing interruption notification, voice identifier mismatch) have also been resolved.
