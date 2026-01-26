@@ -20,10 +20,13 @@ final class PracticeViewModel {
         }
     }
 
+    /// Error message to display when playback fails (e.g., network issues for Estonian TTS).
+    private(set) var playbackError: String?
+
     // MARK: - Dependencies
 
     let speech: Speech
-    private let synthesizer: SpeechSynthesizerService
+    private let synthesizer: SpeechSynthesizing
     private let textParser: TextParser
 
     private var pauseTask: Task<Void, Never>?
@@ -68,11 +71,21 @@ final class PracticeViewModel {
         return "play.fill"
     }
 
+    /// Returns true if the speech uses Estonian TTS (requires network).
+    var usesEstonianTTS: Bool {
+        SpeechServiceFactory.isEstonianLanguage(speech.language)
+    }
+
+    /// Returns the Estonian TTS service if being used, nil otherwise.
+    var estonianTTSService: EstonianTTSService? {
+        synthesizer as? EstonianTTSService
+    }
+
     // MARK: - Initialization
 
     init(speech: Speech) {
         self.speech = speech
-        self.synthesizer = SpeechSynthesizerService()
+        self.synthesizer = SpeechServiceFactory.createService(for: speech.language)
         self.textParser = .shared
         self.settings = PlaybackSettings.load()
 
@@ -98,12 +111,22 @@ final class PracticeViewModel {
 
         HapticManager.shared.playLightImpact()
 
+        // Clear any previous playback error
+        playbackError = nil
+
         currentSpeechToken = synthesizer.speak(
             segment.text,
             rate: settings.rate,
-            voice: settings.voice,
+            voiceIdentifier: settings.voiceIdentifier,
             onComplete: { [weak self] duration in
-                self?.handleSegmentComplete(duration: duration)
+                guard let self = self else { return }
+                // Check for errors from the synthesizer (handles async Estonian TTS errors)
+                if duration == 0, let errorMessage = self.synthesizer.audioErrorMessage {
+                    self.playbackError = errorMessage
+                    self.isPlaying = false
+                    return
+                }
+                self.handleSegmentComplete(duration: duration)
             },
             onInterrupt: { [weak self] in
                 self?.handleInterruption()
