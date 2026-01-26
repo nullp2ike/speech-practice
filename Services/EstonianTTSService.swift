@@ -50,6 +50,21 @@ final class EstonianTTSService: SpeechSynthesizing {
 
         do {
             availableVoices = try await client.fetchAvailableVoices()
+        } catch is CancellationError {
+            // Task was cancelled (e.g., view disappeared) - don't treat as error
+            isLoadingVoices = false
+            return
+        } catch let error as TartuNLPError {
+            // Check if the underlying error is a URL cancellation
+            if case .networkError(let underlyingError) = error,
+               (underlyingError as? URLError)?.code == .cancelled {
+                // Request was cancelled - don't show error to user
+                isLoadingVoices = false
+                return
+            }
+            voicesLoadError = error.localizedDescription
+            // Use default voices on error
+            availableVoices = EstonianVoice.defaultVoices
         } catch {
             voicesLoadError = error.localizedDescription
             // Use default voices on error

@@ -81,6 +81,10 @@ actor TartuNLPClient {
         do {
             (data, response) = try await session.data(for: request)
         } catch {
+            // Check for cancellation first - propagate as CancellationError
+            if (error as? URLError)?.code == .cancelled {
+                throw CancellationError()
+            }
             if isOfflineError(error) {
                 throw TartuNLPError.offline
             }
