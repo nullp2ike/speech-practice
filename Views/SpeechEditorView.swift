@@ -41,10 +41,7 @@ struct SpeechEditorView: View {
             }
 
             Section("Language") {
-                LanguagePicker(selectedLanguage: Binding(
-                    get: { viewModel.speech.language },
-                    set: { viewModel.speech.language = $0 }
-                ))
+                LanguagePicker(selectedLanguage: $viewModel.language)
             }
         }
         .navigationTitle("Edit Speech")

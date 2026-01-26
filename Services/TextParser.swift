@@ -6,6 +6,37 @@ final class TextParser {
 
     private init() {}
 
+    /// Detects the dominant language of the given text.
+    /// - Parameter text: The text to analyze (works best with 20+ characters)
+    /// - Returns: A BCP 47 language code (e.g., "en-US") or nil if detection fails
+    func detectLanguage(_ text: String) -> String? {
+        let recognizer = NLLanguageRecognizer()
+        recognizer.processString(text)
+
+        guard let detectedLanguage = recognizer.dominantLanguage else {
+            return nil
+        }
+
+        // Map NLLanguage rawValue (base language code) to full BCP 47 codes used by the app
+        // NLLanguage.rawValue returns codes like "en", "et", "de", etc.
+        // Note: NLLanguageRecognizer often misidentifies Estonian as Finnish ("fi"),
+        // so we map Finnish to Estonian as a workaround.
+        let languageCode = detectedLanguage.rawValue
+
+        switch languageCode {
+        case "en": return "en-US"
+        case "et", "fi": return "et-EE"  // Finnish often misdetected for Estonian
+        case "de": return "de-DE"
+        case "fr": return "fr-FR"
+        case "es": return "es-ES"
+        case "it": return "it-IT"
+        case "pt": return "pt-BR"
+        case "ja": return "ja-JP"
+        case "zh": return "zh-CN"
+        default: return nil
+        }
+    }
+
     func parse(_ text: String, granularity: SegmentType) -> [SpeechSegment] {
         switch granularity {
         case .sentence:
