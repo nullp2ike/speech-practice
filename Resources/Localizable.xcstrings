@@ -390,6 +390,346 @@
           }
         }
       }
+    },
+    "Text-to-Speech" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Text-to-Speech"
+          }
+        }
+      }
+    },
+    "TTS Provider" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TTS Provider"
+          }
+        }
+      }
+    },
+    "Automatic" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatic"
+          }
+        }
+      }
+    },
+    "iOS (Offline)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS (Offline)"
+          }
+        }
+      }
+    },
+    "Microsoft Azure" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Microsoft Azure"
+          }
+        }
+      }
+    },
+    "Microsoft Azure TTS" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Microsoft Azure TTS"
+          }
+        }
+      }
+    },
+    "Microsoft Azure Settings" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Microsoft Azure Settings"
+          }
+        }
+      }
+    },
+    "Azure Credentials" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Azure Credentials"
+          }
+        }
+      }
+    },
+    "API Key" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API Key"
+          }
+        }
+      }
+    },
+    "Region" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Region"
+          }
+        }
+      }
+    },
+    "Test Connection" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Test Connection"
+          }
+        }
+      }
+    },
+    "Save Credentials" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save Credentials"
+          }
+        }
+      }
+    },
+    "Remove Credentials" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove Credentials"
+          }
+        }
+      }
+    },
+    "(Not configured)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Not configured)"
+          }
+        }
+      }
+    },
+    "Enter your Azure Speech Services API key and select your resource region." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter your Azure Speech Services API key and select your resource region."
+          }
+        }
+      }
+    },
+    "Help" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Help"
+          }
+        }
+      }
+    },
+    "Get Azure Speech Services" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Get Azure Speech Services"
+          }
+        }
+      }
+    },
+    "Azure Portal - Speech Services" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Azure Portal - Speech Services"
+          }
+        }
+      }
+    },
+    "You need an Azure account with a Speech Services resource to use Microsoft TTS." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You need an Azure account with a Speech Services resource to use Microsoft TTS."
+          }
+        }
+      }
+    },
+    "This will remove your Azure API credentials. You'll need to enter them again to use Microsoft TTS." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This will remove your Azure API credentials. You'll need to enter them again to use Microsoft TTS."
+          }
+        }
+      }
+    },
+    "Connected - %lld voices available" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connected - %lld voices available"
+          }
+        }
+      }
+    },
+    "Loading voices..." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading voices..."
+          }
+        }
+      }
+    },
+    "Failed to load voices" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to load voices"
+          }
+        }
+      }
+    },
+    "Load Voices" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Load Voices"
+          }
+        }
+      }
+    },
+    "Retry" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry"
+          }
+        }
+      }
+    },
+    "No voices for this language" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No voices for this language"
+          }
+        }
+      }
+    },
+    "Microsoft TTS not configured" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Microsoft TTS not configured"
+          }
+        }
+      }
+    },
+    "Neural" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neural"
+          }
+        }
+      }
+    },
+    "Using TartuNLP for Estonian (free, requires internet)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Using TartuNLP for Estonian (free, requires internet)."
+          }
+        }
+      }
+    },
+    "Using iOS built-in speech (offline)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Using iOS built-in speech (offline)."
+          }
+        }
+      }
+    },
+    "Using Microsoft Azure neural voices (requires internet and API key)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Using Microsoft Azure neural voices (requires internet and API key)."
+          }
+        }
+      }
+    },
+    "Default (Mari)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default (Mari)"
+          }
+        }
+      }
+    },
+    "Estonian voices unavailable" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estonian voices unavailable"
+          }
+        }
+      }
+    },
+    "Remove" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

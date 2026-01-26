@@ -45,25 +45,9 @@ struct SettingsView: View {
                     Text("When enabled, playback will pause after each segment for the same duration it took to read.")
                 }
 
-                Section("Voice") {
-                    if viewModel.usesEstonianTTS {
-                        EstonianVoicePicker(
-                            selectedVoiceIdentifier: Binding(
-                                get: { viewModel.settings.voiceIdentifier },
-                                set: { viewModel.updateVoice($0) }
-                            ),
-                            estonianService: viewModel.estonianTTSService
-                        )
-                    } else {
-                        VoicePicker(
-                            selectedVoiceIdentifier: Binding(
-                                get: { viewModel.settings.voiceIdentifier },
-                                set: { viewModel.updateVoice($0) }
-                            ),
-                            language: viewModel.speech.language
-                        )
-                    }
-                }
+                ttsProviderSection
+
+                voiceSection
 
                 Section {
                     Button("Restart from Beginning") {
@@ -83,6 +67,100 @@ struct SettingsView: View {
             }
         }
         .presentationDetents([.medium, .large])
+    }
+
+    // MARK: - TTS Provider Section
+
+    private var ttsProviderSection: some View {
+        Section {
+            TTSProviderPicker(
+                selectedProvider: Binding(
+                    get: { viewModel.settings.ttsProvider },
+                    set: { viewModel.updateTTSProvider($0) }
+                ),
+                hasAzureCredentials: KeychainService.hasAzureCredentials()
+            )
+
+            if viewModel.settings.ttsProvider == .microsoft {
+                NavigationLink {
+                    AzureSettingsView(viewModel: viewModel)
+                } label: {
+                    HStack {
+                        Text("Microsoft Azure Settings")
+                        Spacer()
+                        if !KeychainService.hasAzureCredentials() {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundStyle(.orange)
+                        }
+                    }
+                }
+            }
+        } header: {
+            Text("Text-to-Speech")
+        } footer: {
+            providerFooterText
+        }
+    }
+
+    @ViewBuilder
+    private var providerFooterText: some View {
+        switch viewModel.effectiveProvider {
+        case .auto:
+            if viewModel.usesEstonianTTS {
+                Text("Using TartuNLP for Estonian (free, requires internet).")
+            } else {
+                Text("Using iOS built-in speech (offline).")
+            }
+        case .ios:
+            Text("Using iOS built-in speech (offline).")
+        case .microsoft:
+            Text("Using Microsoft Azure neural voices (requires internet and API key).")
+        }
+    }
+
+    // MARK: - Voice Section
+
+    private var voiceSection: some View {
+        Section("Voice") {
+            switch viewModel.effectiveProvider {
+            case .auto:
+                if viewModel.usesEstonianTTS {
+                    EstonianVoicePicker(
+                        selectedVoiceIdentifier: Binding(
+                            get: { viewModel.settings.voiceIdentifier },
+                            set: { viewModel.updateVoice($0) }
+                        ),
+                        estonianService: viewModel.estonianTTSService
+                    )
+                } else {
+                    VoicePicker(
+                        selectedVoiceIdentifier: Binding(
+                            get: { viewModel.settings.voiceIdentifier },
+                            set: { viewModel.updateVoice($0) }
+                        ),
+                        language: viewModel.speech.language
+                    )
+                }
+
+            case .ios:
+                VoicePicker(
+                    selectedVoiceIdentifier: Binding(
+                        get: { viewModel.settings.voiceIdentifier },
+                        set: { viewModel.updateVoice($0) }
+                    ),
+                    language: viewModel.speech.language
+                )
+
+            case .microsoft:
+                AzureVoicePicker(
+                    selectedVoiceShortName: Binding(
+                        get: { viewModel.settings.azureVoicePreference.voice(for: viewModel.speech.language) },
+                        set: { viewModel.updateAzureVoice($0) }
+                    ),
+                    microsoftService: viewModel.microsoftTTSService
+                )
+            }
+        }
     }
 }
 

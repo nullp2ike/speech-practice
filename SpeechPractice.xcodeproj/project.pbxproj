@@ -9,63 +9,80 @@
 /* Begin PBXBuildFile section */
 		0005FE540C3E01A115A2863D /* String+Parsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 463C25C32ACAF8CA69DE2E80 /* String+Parsing.swift */; };
 		0DF3C546EEB9F206FC46FE61 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B9B3A5B3E7D397A452B150 /* SettingsView.swift */; };
+		0FC10E1E1E4858D14A4B2B74 /* SpeechSynthesizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2303E50B7B077A84EC8D4D /* SpeechSynthesizing.swift */; };
+		1BC671A6FD86B7094950014E /* AzureTTSClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38940865C51F356F4784FD6F /* AzureTTSClient.swift */; };
 		26ECF6A531AC2E408F3ACBA2 /* SpeechSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2765474FAD6EF88AB2A1267 /* SpeechSegment.swift */; };
 		30288F857B01787DCD8FBC20 /* SpeechListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73F8DF426CE9F49F5B4A7936 /* SpeechListView.swift */; };
 		38D19FD79D653C31E001DA23 /* PracticeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC4491E42C4910D8465A9FC /* PracticeViewModel.swift */; };
 		3D113BA3451543D4F4BC993D /* SpeechPracticeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B24B23FFAF63E2B3C99EF2 /* SpeechPracticeApp.swift */; };
 		4326B6B60CE721FC4B917F7F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C50B336AC41BAE889C39F0 /* ContentView.swift */; };
 		4BAE892BE092379CDB4F9BDB /* SpeechSynthesizerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53283A2C73D0B6D4F5F9C2AE /* SpeechSynthesizerService.swift */; };
+		4F83BEA07E40C070BE25B5AB /* AudioPlayerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A021DF95731B9949D07A35B5 /* AudioPlayerService.swift */; };
 		523F0D782FC27BC2B4DB9FAF /* SpeechEditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853BDCB78B3E48E46C753156 /* SpeechEditorViewModel.swift */; };
 		58C7ADDF2EA3EB6F7C960E50 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 533FA39E7FB1BA9AF9D7E113 /* HapticManager.swift */; };
+		5D857082799CFD4AC627DB4B /* TTSProviderSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00DE0F072C31F8B40251D1E /* TTSProviderSettings.swift */; };
+		6D3A5087DA549D6EB1A0A94E /* EstonianTTSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DE10CEFAFF5B5388C792B5 /* EstonianTTSService.swift */; };
+		7189B98837310CDCA0B6620B /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC414EF1FCFE2CA1D602EC70 /* KeychainService.swift */; };
 		7C96127B8A5AB5155B5B0948 /* TextParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FCBB55C8E233C37EA5AF782 /* TextParser.swift */; };
 		88371E993A1EBD50963CE529 /* Speech.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8CC7A69873F23FB9EF3A8A9 /* Speech.swift */; };
 		8C710CD502F7185D107995C5 /* PracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D8030FFBA8A22C2F789921 /* PracticeView.swift */; };
+		8C857A35DAE9F3186493EEC9 /* MicrosoftTTSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3780126595EE66A9A97DA609 /* MicrosoftTTSService.swift */; };
+		9D997FFA8A6825AFEFEACFD7 /* TartuNLPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F2B9731CE37CC68BE7989C /* TartuNLPClient.swift */; };
 		B4F3B688171C94E6B3E693C2 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B563EA98B8125549C172A830 /* Localizable.xcstrings */; };
 		C4DE142583E0A67688FD6F31 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7F77F167B21FCA5DA86F100B /* Assets.xcassets */; };
+		CDAA0813BA799FD25FBCBFEF /* SpeechServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EF1E486D210AFE545E61707 /* SpeechServiceFactory.swift */; };
+		EDB362585929125F948EC5F7 /* AzureSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19A8597ACD00ECEC2625E04 /* AzureSettingsView.swift */; };
+		EF901518F8CBDA4B0C349B9D /* AzureVoicePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559277140FB6FE4E0B65A41C /* AzureVoicePicker.swift */; };
 		F8EA56ABF9AD0C95D2D495A7 /* SpeechEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D74FC80DCD5D2E9784EC01E /* SpeechEditorView.swift */; };
 		FC92F35F0EE2BCA854576596 /* PlaybackSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38C166F716F67987DB013BE4 /* PlaybackSettings.swift */; };
-		A1B2C3D4E5F6A7B8C9D0E1F2 /* SpeechSynthesizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F3 /* SpeechSynthesizing.swift */; };
-		A1B2C3D4E5F6A7B8C9D0E1F4 /* TartuNLPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F5 /* TartuNLPClient.swift */; };
-		A1B2C3D4E5F6A7B8C9D0E1F6 /* AudioPlayerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F7 /* AudioPlayerService.swift */; };
-		A1B2C3D4E5F6A7B8C9D0E1F8 /* EstonianTTSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F9 /* EstonianTTSService.swift */; };
-		A1B2C3D4E5F6A7B8C9D0E1FA /* SpeechServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1FB /* SpeechServiceFactory.swift */; };
+		FEC7A2DDDF276BD0E6C01697 /* TTSProviderPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5484A5E6B739D11F352B7 /* TTSProviderPicker.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		13D8030FFBA8A22C2F789921 /* PracticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeView.swift; sourceTree = "<group>"; };
+		15DE10CEFAFF5B5388C792B5 /* EstonianTTSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EstonianTTSService.swift; sourceTree = "<group>"; };
 		27B9B3A5B3E7D397A452B150 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		2E2303E50B7B077A84EC8D4D /* SpeechSynthesizing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechSynthesizing.swift; sourceTree = "<group>"; };
 		32B24B23FFAF63E2B3C99EF2 /* SpeechPracticeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechPracticeApp.swift; sourceTree = "<group>"; };
+		3780126595EE66A9A97DA609 /* MicrosoftTTSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicrosoftTTSService.swift; sourceTree = "<group>"; };
+		38940865C51F356F4784FD6F /* AzureTTSClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AzureTTSClient.swift; sourceTree = "<group>"; };
 		38C166F716F67987DB013BE4 /* PlaybackSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackSettings.swift; sourceTree = "<group>"; };
 		463C25C32ACAF8CA69DE2E80 /* String+Parsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Parsing.swift"; sourceTree = "<group>"; };
 		53283A2C73D0B6D4F5F9C2AE /* SpeechSynthesizerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechSynthesizerService.swift; sourceTree = "<group>"; };
 		533FA39E7FB1BA9AF9D7E113 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
+		559277140FB6FE4E0B65A41C /* AzureVoicePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AzureVoicePicker.swift; sourceTree = "<group>"; };
 		57C50B336AC41BAE889C39F0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		63F2B9731CE37CC68BE7989C /* TartuNLPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TartuNLPClient.swift; sourceTree = "<group>"; };
 		6BC4491E42C4910D8465A9FC /* PracticeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeViewModel.swift; sourceTree = "<group>"; };
 		6CF7838893C621C4B9EAF050 /* SpeechPractice.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SpeechPractice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D74FC80DCD5D2E9784EC01E /* SpeechEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechEditorView.swift; sourceTree = "<group>"; };
 		73F8DF426CE9F49F5B4A7936 /* SpeechListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechListView.swift; sourceTree = "<group>"; };
+		7EF1E486D210AFE545E61707 /* SpeechServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechServiceFactory.swift; sourceTree = "<group>"; };
 		7F77F167B21FCA5DA86F100B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7FCBB55C8E233C37EA5AF782 /* TextParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextParser.swift; sourceTree = "<group>"; };
+		82A5484A5E6B739D11F352B7 /* TTSProviderPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSProviderPicker.swift; sourceTree = "<group>"; };
 		853BDCB78B3E48E46C753156 /* SpeechEditorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechEditorViewModel.swift; sourceTree = "<group>"; };
+		A021DF95731B9949D07A35B5 /* AudioPlayerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerService.swift; sourceTree = "<group>"; };
+		A19A8597ACD00ECEC2625E04 /* AzureSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AzureSettingsView.swift; sourceTree = "<group>"; };
+		B00DE0F072C31F8B40251D1E /* TTSProviderSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSProviderSettings.swift; sourceTree = "<group>"; };
 		B563EA98B8125549C172A830 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		BC414EF1FCFE2CA1D602EC70 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
 		D2765474FAD6EF88AB2A1267 /* SpeechSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechSegment.swift; sourceTree = "<group>"; };
 		F8CC7A69873F23FB9EF3A8A9 /* Speech.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Speech.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6A7B8C9D0E1F3 /* SpeechSynthesizing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechSynthesizing.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6A7B8C9D0E1F5 /* TartuNLPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TartuNLPClient.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6A7B8C9D0E1F7 /* AudioPlayerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerService.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6A7B8C9D0E1F9 /* EstonianTTSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EstonianTTSService.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6A7B8C9D0E1FB /* SpeechServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechServiceFactory.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		093F775A1315850398D7480B /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				A19A8597ACD00ECEC2625E04 /* AzureSettingsView.swift */,
+				559277140FB6FE4E0B65A41C /* AzureVoicePicker.swift */,
 				57C50B336AC41BAE889C39F0 /* ContentView.swift */,
 				13D8030FFBA8A22C2F789921 /* PracticeView.swift */,
 				27B9B3A5B3E7D397A452B150 /* SettingsView.swift */,
 				6D74FC80DCD5D2E9784EC01E /* SpeechEditorView.swift */,
 				73F8DF426CE9F49F5B4A7936 /* SpeechListView.swift */,
+				82A5484A5E6B739D11F352B7 /* TTSProviderPicker.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -76,6 +93,7 @@
 				38C166F716F67987DB013BE4 /* PlaybackSettings.swift */,
 				F8CC7A69873F23FB9EF3A8A9 /* Speech.swift */,
 				D2765474FAD6EF88AB2A1267 /* SpeechSegment.swift */,
+				B00DE0F072C31F8B40251D1E /* TTSProviderSettings.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -83,13 +101,16 @@
 		8CD4682E85F73625BCC58F7F /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				A1B2C3D4E5F6A7B8C9D0E1F7 /* AudioPlayerService.swift */,
-				A1B2C3D4E5F6A7B8C9D0E1F9 /* EstonianTTSService.swift */,
+				A021DF95731B9949D07A35B5 /* AudioPlayerService.swift */,
+				38940865C51F356F4784FD6F /* AzureTTSClient.swift */,
+				15DE10CEFAFF5B5388C792B5 /* EstonianTTSService.swift */,
 				533FA39E7FB1BA9AF9D7E113 /* HapticManager.swift */,
-				A1B2C3D4E5F6A7B8C9D0E1FB /* SpeechServiceFactory.swift */,
-				A1B2C3D4E5F6A7B8C9D0E1F3 /* SpeechSynthesizing.swift */,
+				BC414EF1FCFE2CA1D602EC70 /* KeychainService.swift */,
+				3780126595EE66A9A97DA609 /* MicrosoftTTSService.swift */,
+				7EF1E486D210AFE545E61707 /* SpeechServiceFactory.swift */,
 				53283A2C73D0B6D4F5F9C2AE /* SpeechSynthesizerService.swift */,
-				A1B2C3D4E5F6A7B8C9D0E1F5 /* TartuNLPClient.swift */,
+				2E2303E50B7B077A84EC8D4D /* SpeechSynthesizing.swift */,
+				63F2B9731CE37CC68BE7989C /* TartuNLPClient.swift */,
 				7FCBB55C8E233C37EA5AF782 /* TextParser.swift */,
 			);
 			path = Services;
@@ -214,10 +235,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1B2C3D4E5F6A7B8C9D0E1F6 /* AudioPlayerService.swift in Sources */,
+				4F83BEA07E40C070BE25B5AB /* AudioPlayerService.swift in Sources */,
+				EDB362585929125F948EC5F7 /* AzureSettingsView.swift in Sources */,
+				1BC671A6FD86B7094950014E /* AzureTTSClient.swift in Sources */,
+				EF901518F8CBDA4B0C349B9D /* AzureVoicePicker.swift in Sources */,
 				4326B6B60CE721FC4B917F7F /* ContentView.swift in Sources */,
-				A1B2C3D4E5F6A7B8C9D0E1F8 /* EstonianTTSService.swift in Sources */,
+				6D3A5087DA549D6EB1A0A94E /* EstonianTTSService.swift in Sources */,
 				58C7ADDF2EA3EB6F7C960E50 /* HapticManager.swift in Sources */,
+				7189B98837310CDCA0B6620B /* KeychainService.swift in Sources */,
+				8C857A35DAE9F3186493EEC9 /* MicrosoftTTSService.swift in Sources */,
 				FC92F35F0EE2BCA854576596 /* PlaybackSettings.swift in Sources */,
 				8C710CD502F7185D107995C5 /* PracticeView.swift in Sources */,
 				38D19FD79D653C31E001DA23 /* PracticeViewModel.swift in Sources */,
@@ -228,11 +254,13 @@
 				30288F857B01787DCD8FBC20 /* SpeechListView.swift in Sources */,
 				3D113BA3451543D4F4BC993D /* SpeechPracticeApp.swift in Sources */,
 				26ECF6A531AC2E408F3ACBA2 /* SpeechSegment.swift in Sources */,
-				A1B2C3D4E5F6A7B8C9D0E1FA /* SpeechServiceFactory.swift in Sources */,
-				A1B2C3D4E5F6A7B8C9D0E1F2 /* SpeechSynthesizing.swift in Sources */,
+				CDAA0813BA799FD25FBCBFEF /* SpeechServiceFactory.swift in Sources */,
 				4BAE892BE092379CDB4F9BDB /* SpeechSynthesizerService.swift in Sources */,
+				0FC10E1E1E4858D14A4B2B74 /* SpeechSynthesizing.swift in Sources */,
 				0005FE540C3E01A115A2863D /* String+Parsing.swift in Sources */,
-				A1B2C3D4E5F6A7B8C9D0E1F4 /* TartuNLPClient.swift in Sources */,
+				FEC7A2DDDF276BD0E6C01697 /* TTSProviderPicker.swift in Sources */,
+				5D857082799CFD4AC627DB4B /* TTSProviderSettings.swift in Sources */,
+				9D997FFA8A6825AFEFEACFD7 /* TartuNLPClient.swift in Sources */,
 				7C96127B8A5AB5155B5B0948 /* TextParser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

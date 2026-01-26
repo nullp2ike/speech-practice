@@ -6,6 +6,8 @@ struct PlaybackSettings: Codable, Equatable, Sendable {
     var pauseEnabled: Bool
     var pauseGranularity: SegmentType
     var voiceIdentifier: String?
+    var ttsProvider: TTSProvider
+    var azureVoicePreference: AzureVoicePreference
 
     static let minRate: Float = 0.1
     static let maxRate: Float = 1.0
@@ -15,12 +17,16 @@ struct PlaybackSettings: Codable, Equatable, Sendable {
         rate: Float = AVSpeechUtteranceDefaultSpeechRate,
         pauseEnabled: Bool = true,
         pauseGranularity: SegmentType = .sentence,
-        voiceIdentifier: String? = nil
+        voiceIdentifier: String? = nil,
+        ttsProvider: TTSProvider = .auto,
+        azureVoicePreference: AzureVoicePreference = AzureVoicePreference()
     ) {
         self.rate = min(max(rate, Self.minRate), Self.maxRate)
         self.pauseEnabled = pauseEnabled
         self.pauseGranularity = pauseGranularity
         self.voiceIdentifier = voiceIdentifier
+        self.ttsProvider = ttsProvider
+        self.azureVoicePreference = azureVoicePreference
     }
 
     var voice: AVSpeechSynthesisVoice? {

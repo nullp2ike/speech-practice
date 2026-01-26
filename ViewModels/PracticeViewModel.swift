@@ -26,7 +26,7 @@ final class PracticeViewModel {
     // MARK: - Dependencies
 
     let speech: Speech
-    private let synthesizer: SpeechSynthesizing
+    private var synthesizer: SpeechSynthesizing
     private let textParser: TextParser
 
     private var pauseTask: Task<Void, Never>?
@@ -71,9 +71,22 @@ final class PracticeViewModel {
         return "play.fill"
     }
 
+    /// The effective TTS provider being used (accounts for credential availability).
+    var effectiveProvider: TTSProvider {
+        SpeechServiceFactory.effectiveProvider(
+            settings.ttsProvider,
+            hasAzureCredentials: KeychainService.hasAzureCredentials()
+        )
+    }
+
     /// Returns true if the speech uses Estonian TTS (requires network).
     var usesEstonianTTS: Bool {
-        SpeechServiceFactory.isEstonianLanguage(speech.language)
+        effectiveProvider == .auto && SpeechServiceFactory.isEstonianLanguage(speech.language)
+    }
+
+    /// Returns true if the speech uses Microsoft Azure TTS.
+    var usesMicrosoftTTS: Bool {
+        effectiveProvider == .microsoft
     }
 
     /// Returns the Estonian TTS service if being used, nil otherwise.
@@ -81,17 +94,45 @@ final class PracticeViewModel {
         synthesizer as? EstonianTTSService
     }
 
+    /// Returns the Microsoft TTS service if being used, nil otherwise.
+    var microsoftTTSService: MicrosoftTTSService? {
+        synthesizer as? MicrosoftTTSService
+    }
+
     // MARK: - Initialization
 
     init(speech: Speech) {
         self.speech = speech
-        self.synthesizer = SpeechServiceFactory.createService(for: speech.language)
         self.textParser = .shared
-        self.settings = PlaybackSettings.load()
 
-        // Clear voice identifier if it's incompatible with the current language
-        // (e.g., Estonian voice "mari" is invalid for English, and vice versa)
-        if !SpeechServiceFactory.isVoiceIdentifierValid(settings.voiceIdentifier, for: speech.language) {
+        // Load settings first to get provider preference
+        let loadedSettings = PlaybackSettings.load()
+
+        // Determine the effective provider
+        let provider = SpeechServiceFactory.effectiveProvider(
+            loadedSettings.ttsProvider,
+            hasAzureCredentials: KeychainService.hasAzureCredentials()
+        )
+
+        // Create the appropriate synthesizer
+        let createdSynthesizer = SpeechServiceFactory.createService(for: speech.language, provider: provider)
+
+        // Now initialize stored properties
+        self.settings = loadedSettings
+        self.synthesizer = createdSynthesizer
+
+        // Configure Microsoft TTS service if used
+        if let microsoftService = synthesizer as? MicrosoftTTSService {
+            microsoftService.language = speech.language
+            microsoftService.preferredVoice = settings.azureVoicePreference.voice(for: speech.language)
+        }
+
+        // Clear voice identifier if it's incompatible with the current language/provider
+        if !SpeechServiceFactory.isVoiceIdentifierValid(
+            settings.voiceIdentifier,
+            for: speech.language,
+            provider: provider
+        ) {
             settings.voiceIdentifier = nil
         }
 
@@ -115,13 +156,21 @@ final class PracticeViewModel {
         // Clear any previous playback error
         playbackError = nil
 
+        // Determine voice identifier based on provider
+        let voiceIdentifier: String?
+        if usesMicrosoftTTS {
+            voiceIdentifier = settings.azureVoicePreference.voice(for: speech.language) ?? settings.voiceIdentifier
+        } else {
+            voiceIdentifier = settings.voiceIdentifier
+        }
+
         currentSpeechToken = synthesizer.speak(
             segment.text,
             rate: settings.rate,
-            voiceIdentifier: settings.voiceIdentifier,
+            voiceIdentifier: voiceIdentifier,
             onComplete: { [weak self] duration in
                 guard let self = self else { return }
-                // Check for errors from the synthesizer (handles async Estonian TTS errors)
+                // Check for errors from the synthesizer (handles async TTS errors)
                 if duration == 0, let errorMessage = self.synthesizer.audioErrorMessage {
                     self.playbackError = errorMessage
                     self.isPlaying = false
@@ -294,6 +343,62 @@ final class PracticeViewModel {
     func updateVoice(_ voiceIdentifier: String?) {
         settings.voiceIdentifier = voiceIdentifier
         // didSet on settings handles save()
+    }
+
+    /// Updates the Azure voice preference for the current language.
+    func updateAzureVoice(_ voiceShortName: String?) {
+        settings.azureVoicePreference.setVoice(voiceShortName, for: speech.language)
+        // Update the Microsoft TTS service if active
+        if let microsoftService = microsoftTTSService {
+            microsoftService.preferredVoice = voiceShortName
+        }
+        // didSet on settings handles save()
+    }
+
+    /// Updates the TTS provider and recreates the synthesizer.
+    func updateTTSProvider(_ provider: TTSProvider) {
+        let wasPlaying = isPlaying
+        stop()
+
+        settings.ttsProvider = provider
+        // didSet on settings handles save()
+
+        // Recreate the synthesizer with the new provider
+        let effectiveProvider = SpeechServiceFactory.effectiveProvider(
+            provider,
+            hasAzureCredentials: KeychainService.hasAzureCredentials()
+        )
+        synthesizer = SpeechServiceFactory.createService(for: speech.language, provider: effectiveProvider)
+
+        // Configure Microsoft TTS service if used
+        if let microsoftService = synthesizer as? MicrosoftTTSService {
+            microsoftService.language = speech.language
+            microsoftService.preferredVoice = settings.azureVoicePreference.voice(for: speech.language)
+        }
+
+        // Clear voice identifier if incompatible with new provider
+        if !SpeechServiceFactory.isVoiceIdentifierValid(
+            settings.voiceIdentifier,
+            for: speech.language,
+            provider: effectiveProvider
+        ) {
+            settings.voiceIdentifier = nil
+        }
+
+        if wasPlaying {
+            play()
+        }
+    }
+
+    /// Refreshes Azure credentials and updates the synthesizer if using Microsoft TTS.
+    func refreshAzureCredentials() {
+        if let microsoftService = microsoftTTSService {
+            microsoftService.refreshCredentials()
+        } else if settings.ttsProvider == .microsoft && KeychainService.hasAzureCredentials() {
+            // If Microsoft provider is selected and credentials are now available,
+            // recreate the synthesizer
+            updateTTSProvider(.microsoft)
+        }
     }
 
     // MARK: - Private Helpers
