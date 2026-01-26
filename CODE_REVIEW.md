@@ -96,36 +96,16 @@ The codebase is well-structured with clear separation of concerns (MVVM). Howeve
 
 ## Medium Priority Issues
 
-### 7. Inefficient: HapticManager creates new generators every call
+### 7. ~~Inefficient: HapticManager creates new generators every call~~ FIXED
 
 **File:** `Services/HapticManager.swift:8-11`
 **Severity:** Medium
 **Type:** Performance
-
-```swift
-func playNavigationFeedback() {
-    let generator = UIImpactFeedbackGenerator(style: .medium)
-    generator.prepare()
-    generator.impactOccurred()
-}
-```
+**Status:** ✅ FIXED (2026-01-26)
 
 **Problem:** Creating a new generator each time is wasteful. Generators should be cached and `prepare()` called ahead of time for immediate feedback.
 
-**Fix:**
-```swift
-final class HapticManager {
-    static let shared = HapticManager()
-
-    private let mediumImpact = UIImpactFeedbackGenerator(style: .medium)
-    private let lightImpact = UIImpactFeedbackGenerator(style: .light)
-    // ... cache other generators
-
-    func playNavigationFeedback() {
-        mediumImpact.impactOccurred()
-    }
-}
-```
+**Resolution:** Cached all haptic generators as private properties (`lightImpact`, `mediumImpact`, `heavyImpact`, `notificationGenerator`, `selectionGenerator`) so they're reused across calls.
 
 ---
 
@@ -137,63 +117,33 @@ final class HapticManager {
 
 **Problem:** The `updatedAt` field is used for sorting but lacks an index attribute, which will slow down queries as the dataset grows.
 
-**Fix:**
-```swift
-@Attribute(.unique) var id: UUID
-// Consider adding index for updatedAt if SwiftData supports it in future versions
-```
+**Note:** SwiftData doesn't currently support custom indexes. This will be addressed when SwiftData adds index support in a future iOS version.
 
 ---
 
-### 9. Unnecessary double-save in settings
+### 9. ~~Unnecessary double-save in settings~~ FIXED
 
 **File:** `ViewModels/PracticeViewModel.swift:203-206`
 **Severity:** Medium
 **Type:** Redundant Code
-
-```swift
-func updateRate(_ rate: Float) {
-    settings.setRate(rate)
-    settings.save()  // Also saves in didSet on line 19-21
-}
-```
+**Status:** ✅ FIXED (2026-01-26)
 
 **Problem:** The `settings` property already has a `didSet` that calls `save()`, causing double saves to UserDefaults.
 
-**Fix:** Remove the explicit `save()` call from update methods since `didSet` handles it:
-```swift
-func updateRate(_ rate: Float) {
-    settings.setRate(rate)
-    // didSet will call save() automatically
-}
-```
+**Resolution:** Removed explicit `save()` calls from `updateRate()`, `updatePauseEnabled()`, `updatePauseGranularity()`, and `updateVoice()` methods. The `didSet` observer on the `settings` property handles saving automatically.
 
 ---
 
-### 10. Empty state shows when searching with no results
+### 10. ~~Empty state shows when searching with no results~~ FIXED
 
 **File:** `Views/SpeechListView.swift:12`
 **Severity:** Medium
 **Type:** UX Bug
-
-```swift
-if viewModel.speeches.isEmpty {
-    emptyStateView
-}
-```
+**Status:** ✅ FIXED (2026-01-26)
 
 **Problem:** Should check `filteredSpeeches.isEmpty` and differentiate between "No results" for search vs "No speeches" for empty state.
 
-**Fix:**
-```swift
-if viewModel.speeches.isEmpty {
-    emptyStateView  // "No speeches yet"
-} else if viewModel.filteredSpeeches.isEmpty {
-    noSearchResultsView  // "No results for 'query'"
-} else {
-    speechListContent
-}
-```
+**Resolution:** Added conditional check for `filteredSpeeches.isEmpty` between the empty state and list content. Added `noSearchResultsView` using SwiftUI's built-in `ContentUnavailableView.search(text:)` for a proper "no results" experience.
 
 ---
 
@@ -366,10 +316,10 @@ Allow cancelling speech synthesis with proper cleanup instead of relying solely 
 |----------|-------|-------|
 | Critical | 3 | ✅ 3 |
 | High | 3 | ✅ 3 |
-| Medium | 4 | 0 |
+| Medium | 4 | ✅ 3 |
 | Low | 5 | 0 |
 | Suggestions | 3 | 0 |
-| **Total** | **18** | **6** |
+| **Total** | **18** | **9** |
 
 ---
 
@@ -381,5 +331,7 @@ Allow cancelling speech synthesis with proper cleanup instead of relying solely 
 4. ~~Add audio interruption handling (#5)~~ ✅ DONE
 5. ~~Remove redundant Combine subscriptions (#4)~~ ✅ DONE
 6. ~~Fix race condition in pause interval (#6)~~ ✅ DONE
-7. Fix empty state vs no search results (#10)
-8. Address remaining medium/low issues
+7. ~~Fix empty state vs no search results (#10)~~ ✅ DONE
+8. ~~Cache haptic generators (#7)~~ ✅ DONE
+9. ~~Remove double-save in settings (#9)~~ ✅ DONE
+10. Address remaining low priority issues

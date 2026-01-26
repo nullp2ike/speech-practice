@@ -3,41 +3,37 @@ import UIKit
 final class HapticManager {
     static let shared = HapticManager()
 
+    // MARK: - Cached Generators
+
+    private let lightImpact = UIImpactFeedbackGenerator(style: .light)
+    private let mediumImpact = UIImpactFeedbackGenerator(style: .medium)
+    private let heavyImpact = UIImpactFeedbackGenerator(style: .heavy)
+    private let notificationGenerator = UINotificationFeedbackGenerator()
+    private let selectionGenerator = UISelectionFeedbackGenerator()
+
     private init() {}
 
     func playNavigationFeedback() {
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.prepare()
-        generator.impactOccurred()
+        mediumImpact.impactOccurred()
     }
 
     func playSegmentCompleteFeedback() {
-        let generator = UINotificationFeedbackGenerator()
-        generator.prepare()
-        generator.notificationOccurred(.success)
+        notificationGenerator.notificationOccurred(.success)
     }
 
     func playSelectionFeedback() {
-        let generator = UISelectionFeedbackGenerator()
-        generator.prepare()
-        generator.selectionChanged()
+        selectionGenerator.selectionChanged()
     }
 
     func playErrorFeedback() {
-        let generator = UINotificationFeedbackGenerator()
-        generator.prepare()
-        generator.notificationOccurred(.error)
+        notificationGenerator.notificationOccurred(.error)
     }
 
     func playLightImpact() {
-        let generator = UIImpactFeedbackGenerator(style: .light)
-        generator.prepare()
-        generator.impactOccurred()
+        lightImpact.impactOccurred()
     }
 
     func playHeavyImpact() {
-        let generator = UIImpactFeedbackGenerator(style: .heavy)
-        generator.prepare()
-        generator.impactOccurred()
+        heavyImpact.impactOccurred()
     }
 }

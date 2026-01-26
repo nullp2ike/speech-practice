@@ -22,6 +22,8 @@ struct SpeechListView: View {
             Group {
                 if speeches.isEmpty {
                     emptyStateView
+                } else if filteredSpeeches.isEmpty {
+                    noSearchResultsView
                 } else {
                     speechListContent
                 }
@@ -57,6 +59,10 @@ struct SpeechListView: View {
             }
             .buttonStyle(.borderedProminent)
         }
+    }
+
+    private var noSearchResultsView: some View {
+        ContentUnavailableView.search(text: searchText)
     }
 
     private var speechListContent: some View {

@@ -203,12 +203,12 @@ final class PracticeViewModel {
 
     func updateRate(_ rate: Float) {
         settings.setRate(rate)
-        settings.save()
+        // didSet on settings handles save()
     }
 
     func updatePauseEnabled(_ enabled: Bool) {
         settings.pauseEnabled = enabled
-        settings.save()
+        // didSet on settings handles save()
     }
 
     func updatePauseGranularity(_ granularity: SegmentType) {
@@ -216,7 +216,7 @@ final class PracticeViewModel {
         stop()
 
         settings.pauseGranularity = granularity
-        settings.save()
+        // didSet on settings handles save()
 
         parseSegments()
 
@@ -227,7 +227,7 @@ final class PracticeViewModel {
 
     func updateVoice(_ voiceIdentifier: String?) {
         settings.voiceIdentifier = voiceIdentifier
-        settings.save()
+        // didSet on settings handles save()
     }
 
     // MARK: - Private Helpers
