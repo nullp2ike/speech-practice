@@ -3,11 +3,17 @@ import SwiftUI
 /// Picker for selecting the TTS provider.
 struct TTSProviderPicker: View {
     @Binding var selectedProvider: TTSProvider
+    let language: String
     let hasAzureCredentials: Bool
+
+    /// Providers available for the current language.
+    private var availableProviders: [TTSProvider] {
+        TTSProvider.availableCases(for: language)
+    }
 
     var body: some View {
         Picker("TTS Provider", selection: $selectedProvider) {
-            ForEach(TTSProvider.allCases, id: \.self) { provider in
+            ForEach(availableProviders, id: \.self) { provider in
                 ProviderRow(provider: provider, hasCredentials: hasAzureCredentials)
                     .tag(provider)
             }
@@ -41,10 +47,21 @@ private struct ProviderRow: View {
     }
 }
 
-#Preview {
+#Preview("English") {
     Form {
         TTSProviderPicker(
-            selectedProvider: .constant(.auto),
+            selectedProvider: .constant(.ios),
+            language: "en-US",
+            hasAzureCredentials: false
+        )
+    }
+}
+
+#Preview("Estonian") {
+    Form {
+        TTSProviderPicker(
+            selectedProvider: .constant(.tartuNLP),
+            language: "et-EE",
             hasAzureCredentials: false
         )
     }

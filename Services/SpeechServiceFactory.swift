@@ -4,11 +4,11 @@ import AVFoundation
 /// Factory for creating appropriate speech synthesis services based on language and provider.
 @MainActor
 enum SpeechServiceFactory {
-    /// Creates the appropriate speech service for the given language using auto provider selection.
+    /// Creates the appropriate speech service for the given language using the default provider.
     /// - Parameter language: BCP 47 language code (e.g., "en-US", "et-EE")
     /// - Returns: A speech synthesizing service appropriate for the language
     static func createService(for language: String) -> SpeechSynthesizing {
-        createService(for: language, provider: .auto)
+        createService(for: language, provider: PlaybackSettings.defaultProvider(for: language))
     }
 
     /// Creates the appropriate speech service for the given language and provider.
@@ -19,8 +19,12 @@ enum SpeechServiceFactory {
     static func createService(for language: String, provider: TTSProvider) -> SpeechSynthesizing {
         switch provider {
         case .auto:
-            // Auto mode: Estonian uses TartuNLP, others use iOS
-            if isEstonianLanguage(language) {
+            // Deprecated: treat as language default for migration
+            return createService(for: language, provider: PlaybackSettings.defaultProvider(for: language))
+
+        case .tartuNLP:
+            // TartuNLP only works for Estonian; fall back to iOS for other languages
+            if TTSProvider.isEstonianLanguage(language) {
                 return EstonianTTSService()
             }
             return SpeechSynthesizerService()
@@ -37,26 +41,28 @@ enum SpeechServiceFactory {
         }
     }
 
-    /// Determines the effective provider to use, considering credentials availability.
+    /// Determines the effective provider to use, considering credentials availability and language.
     /// - Parameters:
     ///   - provider: The requested TTS provider
+    ///   - language: The speech language
     ///   - hasAzureCredentials: Whether Azure credentials are configured
-    /// - Returns: The effective provider (may differ if Microsoft is selected but not configured)
-    static func effectiveProvider(_ provider: TTSProvider, hasAzureCredentials: Bool) -> TTSProvider {
+    /// - Returns: The effective provider (may differ based on constraints)
+    static func effectiveProvider(_ provider: TTSProvider, language: String, hasAzureCredentials: Bool) -> TTSProvider {
         switch provider {
+        case .auto:
+            // Migrate deprecated .auto to language default
+            return PlaybackSettings.defaultProvider(for: language)
         case .microsoft:
-            // Fall back to auto if Microsoft is selected but not configured
-            return hasAzureCredentials ? .microsoft : .auto
+            // Fall back to language default if Microsoft is selected but not configured
+            return hasAzureCredentials ? .microsoft : PlaybackSettings.defaultProvider(for: language)
         default:
             return provider
         }
     }
 
-    /// Returns true if the given language uses the Estonian TTS service with auto provider.
-    /// - Parameter language: BCP 47 language code
-    /// - Returns: True if Estonian TTS will be used
-    static func isEstonianLanguage(_ language: String) -> Bool {
-        language.lowercased().hasPrefix("et")
+    /// Legacy overload for backwards compatibility (assumes non-Estonian language).
+    static func effectiveProvider(_ provider: TTSProvider, hasAzureCredentials: Bool) -> TTSProvider {
+        effectiveProvider(provider, language: "en-US", hasAzureCredentials: hasAzureCredentials)
     }
 
     /// Checks if a voice identifier is valid for the given language and provider.
@@ -68,7 +74,7 @@ enum SpeechServiceFactory {
     static func isVoiceIdentifierValid(
         _ voiceIdentifier: String?,
         for language: String,
-        provider: TTSProvider = .auto
+        provider: TTSProvider = .ios
     ) -> Bool {
         guard let voiceIdentifier = voiceIdentifier else {
             return true // nil is always valid (uses default)
@@ -76,11 +82,19 @@ enum SpeechServiceFactory {
 
         switch provider {
         case .auto:
-            if isEstonianLanguage(language) {
+            // Deprecated: treat as language default
+            return isVoiceIdentifierValid(
+                voiceIdentifier,
+                for: language,
+                provider: PlaybackSettings.defaultProvider(for: language)
+            )
+
+        case .tartuNLP:
+            if TTSProvider.isEstonianLanguage(language) {
                 // Estonian voices use simple IDs like "mari"
                 return EstonianVoice.knownVoiceIds.contains(voiceIdentifier)
             } else {
-                // AVSpeech voices use full identifiers
+                // TartuNLP for non-Estonian falls back to iOS, so check iOS voices
                 if EstonianVoice.knownVoiceIds.contains(voiceIdentifier) {
                     return false
                 }
@@ -103,8 +117,8 @@ enum SpeechServiceFactory {
             if AVSpeechSynthesisVoice(identifier: voiceIdentifier) != nil {
                 return false
             }
-            // Azure voice identifiers contain a dash and typically end with "Neural"
-            return voiceIdentifier.contains("-") && voiceIdentifier.contains("-")
+            // Azure voice identifiers contain locale format like "en-US-JennyNeural"
+            return voiceIdentifier.contains("-")
         }
     }
 }

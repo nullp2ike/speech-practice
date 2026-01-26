@@ -71,6 +71,7 @@ struct SettingsView: View {
                     get: { viewModel.settings.ttsProvider },
                     set: { viewModel.updateTTSProvider($0) }
                 ),
+                language: viewModel.speech.language,
                 hasAzureCredentials: KeychainService.hasAzureCredentials()
             )
 
@@ -99,10 +100,13 @@ struct SettingsView: View {
     private var providerFooterText: some View {
         switch viewModel.effectiveProvider {
         case .auto:
+            // Deprecated: should not appear, but handle gracefully
+            Text("Using iOS built-in speech (offline).")
+        case .tartuNLP:
             if viewModel.usesEstonianTTS {
                 Text("Using TartuNLP for Estonian (free, requires internet).")
             } else {
-                Text("Using iOS built-in speech (offline).")
+                Text("TartuNLP only supports Estonian. Using iOS built-in speech instead.")
             }
         case .ios:
             Text("Using iOS built-in speech (offline).")
@@ -117,6 +121,16 @@ struct SettingsView: View {
         Section("Voice") {
             switch viewModel.effectiveProvider {
             case .auto:
+                // Deprecated: handle gracefully by showing iOS voice picker
+                VoicePicker(
+                    selectedVoiceIdentifier: Binding(
+                        get: { viewModel.settings.voiceIdentifier },
+                        set: { viewModel.updateVoice($0) }
+                    ),
+                    language: viewModel.speech.language
+                )
+
+            case .tartuNLP:
                 if viewModel.usesEstonianTTS {
                     EstonianVoicePicker(
                         selectedVoiceIdentifier: Binding(
@@ -126,6 +140,7 @@ struct SettingsView: View {
                         estonianService: viewModel.estonianTTSService
                     )
                 } else {
+                    // TartuNLP selected but not Estonian - show iOS voices
                     VoicePicker(
                         selectedVoiceIdentifier: Binding(
                             get: { viewModel.settings.voiceIdentifier },

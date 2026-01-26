@@ -71,17 +71,18 @@ final class PracticeViewModel {
         return "play.fill"
     }
 
-    /// The effective TTS provider being used (accounts for credential availability).
+    /// The effective TTS provider being used (accounts for credential availability and language).
     var effectiveProvider: TTSProvider {
         SpeechServiceFactory.effectiveProvider(
             settings.ttsProvider,
+            language: speech.language,
             hasAzureCredentials: KeychainService.hasAzureCredentials()
         )
     }
 
     /// Returns true if the speech uses Estonian TTS (requires network).
     var usesEstonianTTS: Bool {
-        effectiveProvider == .auto && SpeechServiceFactory.isEstonianLanguage(speech.language)
+        effectiveProvider == .tartuNLP && TTSProvider.isEstonianLanguage(speech.language)
     }
 
     /// Returns true if the speech uses Microsoft Azure TTS.
@@ -106,11 +107,20 @@ final class PracticeViewModel {
         self.textParser = .shared
 
         // Load settings first to get provider preference
-        let loadedSettings = PlaybackSettings.load()
+        var loadedSettings = PlaybackSettings.load()
+
+        // Handle migration from deprecated .auto
+        if loadedSettings.ttsProvider == .auto {
+            // Migrate deprecated .auto to language-based default
+            loadedSettings.ttsProvider = PlaybackSettings.defaultProvider(for: speech.language)
+            // Note: hasUserSelectedProvider remains false so future speeches
+            // can still get their language-appropriate defaults until user explicitly chooses
+        }
 
         // Determine the effective provider
         let provider = SpeechServiceFactory.effectiveProvider(
             loadedSettings.ttsProvider,
+            language: speech.language,
             hasAzureCredentials: KeychainService.hasAzureCredentials()
         )
 
@@ -361,11 +371,13 @@ final class PracticeViewModel {
         stop()
 
         settings.ttsProvider = provider
+        settings.hasUserSelectedProvider = true
         // didSet on settings handles save()
 
         // Recreate the synthesizer with the new provider
         let effectiveProvider = SpeechServiceFactory.effectiveProvider(
             provider,
+            language: speech.language,
             hasAzureCredentials: KeychainService.hasAzureCredentials()
         )
         synthesizer = SpeechServiceFactory.createService(for: speech.language, provider: effectiveProvider)

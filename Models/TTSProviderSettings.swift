@@ -1,13 +1,15 @@
 import Foundation
 
 /// Available TTS providers for speech synthesis.
-enum TTSProvider: String, Codable, CaseIterable, Sendable {
-    /// Automatic selection: Estonian uses TartuNLP, others use iOS AVSpeech
+enum TTSProvider: String, Codable, Sendable {
+    /// Deprecated: kept for migration. Use `defaultProvider(for:)` instead.
     case auto
     /// iOS AVSpeech for all languages (offline capable)
     case ios
     /// Microsoft Azure TTS for all languages (requires API key and internet)
     case microsoft
+    /// TartuNLP for Estonian language (free, requires internet)
+    case tartuNLP
 
     var displayName: String {
         switch self {
@@ -17,6 +19,8 @@ enum TTSProvider: String, Codable, CaseIterable, Sendable {
             return "iOS (Offline)"
         case .microsoft:
             return "Microsoft Azure"
+        case .tartuNLP:
+            return "TartuNLP (Estonian)"
         }
     }
 
@@ -28,7 +32,30 @@ enum TTSProvider: String, Codable, CaseIterable, Sendable {
             return "Uses device voices, works offline"
         case .microsoft:
             return "High-quality neural voices, requires internet"
+        case .tartuNLP:
+            return "Free Estonian TTS, requires internet"
         }
+    }
+
+    /// Whether this provider only works for Estonian language.
+    var isEstonianOnly: Bool {
+        self == .tartuNLP
+    }
+
+    /// Providers available for a specific language.
+    /// - Parameter language: BCP 47 language code (e.g., "en-US", "et-EE")
+    static func availableCases(for language: String) -> [TTSProvider] {
+        if isEstonianLanguage(language) {
+            return [.ios, .microsoft, .tartuNLP]
+        } else {
+            return [.ios, .microsoft]
+        }
+    }
+
+    /// Returns true if the given language is Estonian.
+    /// - Parameter language: BCP 47 language code
+    static func isEstonianLanguage(_ language: String) -> Bool {
+        language.lowercased().hasPrefix("et")
     }
 }
 
