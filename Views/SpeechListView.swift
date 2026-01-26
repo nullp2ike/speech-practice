@@ -114,7 +114,7 @@ struct SpeechRowView: View {
                 .foregroundStyle(.secondary)
                 .lineLimit(2)
 
-            Text(speech.updatedAt, style: .relative)
+            Text(speech.formattedEstimatedDuration)
                 .font(.caption)
                 .foregroundStyle(.tertiary)
         }
