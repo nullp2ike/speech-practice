@@ -1,7 +1,7 @@
 import Foundation
 import AVFoundation
 
-struct PlaybackSettings: Codable, Equatable {
+struct PlaybackSettings: Codable, Equatable, Sendable {
     var rate: Float
     var pauseEnabled: Bool
     var pauseGranularity: SegmentType

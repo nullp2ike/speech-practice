@@ -1,6 +1,9 @@
 import Foundation
 
-struct SpeechSegment: Identifiable, Equatable {
+struct SpeechSegment: Identifiable, Equatable, @unchecked Sendable {
+    // Note: @unchecked is required because Range<String.Index> isn't Sendable,
+    // but this struct is safe to send across concurrency domains since all
+    // properties are immutable (let) and never mutated after initialization.
     let id: UUID
     let text: String
     let range: Range<String.Index>
@@ -18,7 +21,7 @@ struct SpeechSegment: Identifiable, Equatable {
     }
 }
 
-enum SegmentType: String, CaseIterable, Codable {
+enum SegmentType: String, CaseIterable, Codable, Sendable {
     case sentence
     case paragraph
 

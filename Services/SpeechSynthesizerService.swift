@@ -1,6 +1,23 @@
 import Foundation
 import AVFoundation
 
+// MARK: - Speech Cancellation Token
+
+/// A token that allows cancellation of a speech synthesis operation.
+/// The token can be checked for cancellation status and cancelled from outside the service.
+final class SpeechCancellationToken: @unchecked Sendable {
+    private var _isCancelled = false
+    private let lock = NSLock()
+
+    var isCancelled: Bool {
+        lock.withLock { _isCancelled }
+    }
+
+    func cancel() {
+        lock.withLock { _isCancelled = true }
+    }
+}
+
 @MainActor
 @Observable
 final class SpeechSynthesizerService: NSObject {
@@ -13,6 +30,7 @@ final class SpeechSynthesizerService: NSObject {
     private var segmentStartTime: Date?
     private var onSegmentComplete: ((TimeInterval) -> Void)?
     private var onInterruption: (() -> Void)?
+    private var currentCancellationToken: SpeechCancellationToken?
 
     override init() {
         super.init()
@@ -23,6 +41,8 @@ final class SpeechSynthesizerService: NSObject {
 
     /// Clears all callbacks and stops synthesis. Call this when the owning view disappears.
     func cleanup() {
+        currentCancellationToken?.cancel()
+        currentCancellationToken = nil
         stop()
         onSegmentComplete = nil
         onInterruption = nil
@@ -74,14 +94,26 @@ final class SpeechSynthesizerService: NSObject {
         }
     }
 
+    /// Speaks the given text with the specified rate and voice.
+    /// - Parameters:
+    ///   - text: The text to speak
+    ///   - rate: Speech rate (0.1 to 1.0)
+    ///   - voice: Optional voice to use
+    ///   - onComplete: Called when speech finishes with the duration
+    ///   - onInterrupt: Called when speech is interrupted
+    /// - Returns: A cancellation token that can be used to cancel this specific speech operation
+    @discardableResult
     func speak(
         _ text: String,
         rate: Float,
         voice: AVSpeechSynthesisVoice?,
         onComplete: @escaping (TimeInterval) -> Void,
         onInterrupt: (() -> Void)? = nil
-    ) {
+    ) -> SpeechCancellationToken {
         stop()
+
+        let token = SpeechCancellationToken()
+        currentCancellationToken = token
 
         let utterance = AVSpeechUtterance(string: text)
         utterance.rate = rate
@@ -96,6 +128,24 @@ final class SpeechSynthesizerService: NSObject {
         synthesizer.speak(utterance)
         isSpeaking = true
         isPaused = false
+
+        return token
+    }
+
+    /// Cancels the speech operation associated with the given token.
+    /// If the token matches the current operation, the speech is stopped and callbacks are not called.
+    func cancel(token: SpeechCancellationToken) {
+        token.cancel()
+        if currentCancellationToken === token {
+            synthesizer.stopSpeaking(at: .immediate)
+            isSpeaking = false
+            isPaused = false
+            currentUtteranceProgress = 0
+            segmentStartTime = nil
+            onSegmentComplete = nil
+            onInterruption = nil
+            currentCancellationToken = nil
+        }
     }
 
     func pause() {
@@ -111,6 +161,8 @@ final class SpeechSynthesizerService: NSObject {
     }
 
     func stop() {
+        currentCancellationToken?.cancel()
+        currentCancellationToken = nil
         synthesizer.stopSpeaking(at: .immediate)
         isSpeaking = false
         isPaused = false
@@ -162,6 +214,18 @@ extension SpeechSynthesizerService: AVSpeechSynthesizerDelegate {
         didFinish utterance: AVSpeechUtterance
     ) {
         Task { @MainActor in
+            // Check if the operation was cancelled before calling completion
+            guard currentCancellationToken?.isCancelled != true else {
+                // Already cancelled, clean up state
+                isSpeaking = false
+                isPaused = false
+                currentUtteranceProgress = 0
+                onSegmentComplete = nil
+                segmentStartTime = nil
+                currentCancellationToken = nil
+                return
+            }
+
             let duration: TimeInterval
             if let startTime = segmentStartTime {
                 duration = Date().timeIntervalSince(startTime)
@@ -176,6 +240,7 @@ extension SpeechSynthesizerService: AVSpeechSynthesizerDelegate {
             onSegmentComplete?(duration)
             onSegmentComplete = nil
             segmentStartTime = nil
+            currentCancellationToken = nil
         }
     }
 
@@ -207,6 +272,7 @@ extension SpeechSynthesizerService: AVSpeechSynthesizerDelegate {
             currentUtteranceProgress = 0
             onSegmentComplete = nil
             segmentStartTime = nil
+            currentCancellationToken = nil
         }
     }
 

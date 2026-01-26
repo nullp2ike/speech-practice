@@ -27,6 +27,7 @@ final class PracticeViewModel {
     private let textParser: TextParser
 
     private var pauseTask: Task<Void, Never>?
+    private var currentSpeechToken: SpeechCancellationToken?
 
     // MARK: - Constants
 
@@ -96,7 +97,7 @@ final class PracticeViewModel {
 
         HapticManager.shared.playLightImpact()
 
-        synthesizer.speak(
+        currentSpeechToken = synthesizer.speak(
             segment.text,
             rate: settings.rate,
             voice: settings.voice,
@@ -137,7 +138,7 @@ final class PracticeViewModel {
 
     func stop() {
         cancelPauseInterval()
-        synthesizer.stop()
+        cancelCurrentSpeech()
         isPlaying = false
         isPaused = false
         HapticManager.shared.playLightImpact()
@@ -160,7 +161,7 @@ final class PracticeViewModel {
     func goToNextSegment() {
         guard canGoForward else { return }
         cancelPauseInterval()
-        synthesizer.stop()
+        cancelCurrentSpeech()
         currentSegmentIndex += 1
         HapticManager.shared.playNavigationFeedback()
 
@@ -172,7 +173,7 @@ final class PracticeViewModel {
     func goToPreviousSegment() {
         guard canGoBack else { return }
         cancelPauseInterval()
-        synthesizer.stop()
+        cancelCurrentSpeech()
         currentSegmentIndex -= 1
         HapticManager.shared.playNavigationFeedback()
 
@@ -184,12 +185,22 @@ final class PracticeViewModel {
     func goToSegment(at index: Int) {
         guard index >= 0 && index < segments.count else { return }
         cancelPauseInterval()
-        synthesizer.stop()
+        cancelCurrentSpeech()
         currentSegmentIndex = index
         HapticManager.shared.playSelectionFeedback()
 
         if isPlaying {
             play()
+        }
+    }
+
+    /// Cancels the current speech operation using the cancellation token
+    private func cancelCurrentSpeech() {
+        if let token = currentSpeechToken {
+            synthesizer.cancel(token: token)
+            currentSpeechToken = nil
+        } else {
+            synthesizer.stop()
         }
     }
 
@@ -295,6 +306,8 @@ final class PracticeViewModel {
 
     func cleanup() {
         cancelPauseInterval()
+        currentSpeechToken?.cancel()
+        currentSpeechToken = nil
         synthesizer.cleanup()
         isPlaying = false
         isPaused = false

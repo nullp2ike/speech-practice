@@ -216,35 +216,33 @@ The codebase is well-structured with clear separation of concerns (MVVM). Howeve
 
 ## Suggestions for Future Improvement
 
-### 16. Consider using SwiftData's @Query
+### 16. ~~Consider using SwiftData's @Query~~ IMPLEMENTED
 
-Instead of manual fetch in ViewModel, use `@Query` directly in the view for automatic updates:
+**Status:** ✅ IMPLEMENTED (2026-01-26, issue #2)
 
-```swift
-struct SpeechListView: View {
-    @Query(sort: \Speech.updatedAt, order: .reverse)
-    var speeches: [Speech]
-    // ...
-}
-```
+`SpeechListView` now uses `@Query` directly instead of a ViewModel for automatic updates.
 
 ---
 
-### 17. Add Sendable conformance
+### 17. ~~Add Sendable conformance~~ IMPLEMENTED
 
-`SpeechSegment` and `PlaybackSettings` should conform to `Sendable` for safe concurrent access:
+**Status:** ✅ IMPLEMENTED (2026-01-26)
 
-```swift
-struct SpeechSegment: Identifiable, Equatable, Sendable {
-    // ...
-}
-```
+`SpeechSegment` and `SegmentType` now conform to `Sendable` (with `@unchecked Sendable` for `SpeechSegment` due to `Range<String.Index>`). `PlaybackSettings` also conforms to `Sendable` for safe concurrent access.
 
 ---
 
-### 18. Consider cancellation token for speech
+### 18. ~~Consider cancellation token for speech~~ IMPLEMENTED
 
-Allow cancelling speech synthesis with proper cleanup instead of relying solely on `stop()`. This would provide better control over the synthesis lifecycle.
+**Status:** ✅ IMPLEMENTED (2026-01-26)
+
+Added `SpeechCancellationToken` class that:
+- Allows tracking and cancelling specific speech operations
+- Prevents callbacks from firing for cancelled operations
+- Provides thread-safe cancellation status via `NSLock`
+- `speak()` now returns a cancellation token
+- Added `cancel(token:)` method for targeted cancellation
+- `PracticeViewModel` uses the token for proper lifecycle control
 
 ---
 
@@ -271,8 +269,8 @@ Allow cancelling speech synthesis with proper cleanup instead of relying solely 
 | High | 3 | ✅ 3 |
 | Medium | 4 | ✅ 3 |
 | Low | 5 | ✅ 5 |
-| Suggestions | 3 | 0 |
-| **Total** | **18** | **14** |
+| Suggestions | 3 | ✅ 3 |
+| **Total** | **18** | **17** |
 
 ---
 
@@ -289,4 +287,4 @@ Allow cancelling speech synthesis with proper cleanup instead of relying solely 
 9. ~~Remove double-save in settings (#9)~~ ✅ DONE
 10. ~~Address remaining low priority issues (#11-#15)~~ ✅ DONE
 
-**Remaining:** Issues #8 (SwiftData index) and suggestions #16-#18 are deferred or optional enhancements.
+**Remaining:** Issue #8 (SwiftData index) is deferred pending SwiftData index support in a future iOS version.
