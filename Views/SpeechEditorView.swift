@@ -5,10 +5,12 @@ struct SpeechEditorView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
+    private var navigationPathBinding: Binding<NavigationPath>?
     @State private var viewModel: SpeechEditorViewModel
 
-    init(speech: Speech) {
+    init(speech: Speech, navigationPath: Binding<NavigationPath>? = nil) {
         _viewModel = State(initialValue: SpeechEditorViewModel(speech: speech))
+        self.navigationPathBinding = navigationPath
     }
 
     var body: some View {
@@ -50,7 +52,14 @@ struct SpeechEditorView: View {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") {
                     viewModel.save()
-                    dismiss()
+                    HapticManager.shared.playLightImpact()
+                    if let binding = navigationPathBinding {
+                        // Replace editor with detail view
+                        binding.wrappedValue.removeLast()
+                        binding.wrappedValue.append(viewModel.speech)
+                    } else {
+                        dismiss()
+                    }
                 }
             }
         }

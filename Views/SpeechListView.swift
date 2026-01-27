@@ -43,7 +43,7 @@ struct SpeechListView: View {
             }
             .navigationTitle("Speeches")
             .navigationDestination(for: SpeechToEdit.self) { item in
-                SpeechEditorView(speech: item.speech)
+                SpeechEditorView(speech: item.speech, navigationPath: $navigationPath)
             }
             .navigationDestination(for: Speech.self) { speech in
                 SpeechDetailView(speech: speech)
