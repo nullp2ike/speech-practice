@@ -4,6 +4,7 @@ import AVFoundation
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Bindable var viewModel: PracticeViewModel
+    @State private var showingHelp = false
 
     var body: some View {
         NavigationStack {
@@ -48,6 +49,14 @@ struct SettingsView: View {
                 ttsProviderSection
 
                 voiceSection
+
+                Section {
+                    Button {
+                        showingHelp = true
+                    } label: {
+                        Label("Help", systemImage: "questionmark.circle")
+                    }
+                }
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
@@ -58,6 +67,9 @@ struct SettingsView: View {
                     }
                 }
             }
+        }
+        .sheet(isPresented: $showingHelp) {
+            HelpView()
         }
         .presentationDetents([.medium, .large])
     }

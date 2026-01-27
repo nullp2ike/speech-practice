@@ -18,6 +18,7 @@ struct SpeechListView: View {
     @Query(sort: \Speech.updatedAt, order: .reverse) private var speeches: [Speech]
     @State private var searchText = ""
     @State private var showingNewSpeechSheet = false
+    @State private var showingHelp = false
     @State private var navigationPath = NavigationPath()
 
     private var filteredSpeeches: [Speech] {
@@ -49,6 +50,13 @@ struct SpeechListView: View {
                 SpeechDetailView(speech: speech)
             }
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        showingHelp = true
+                    } label: {
+                        Image(systemName: "questionmark.circle")
+                    }
+                }
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         showingNewSpeechSheet = true
@@ -66,6 +74,9 @@ struct SpeechListView: View {
                         navigationPath.append(SpeechToEdit(speech: speech))
                     }
                 }
+            }
+            .sheet(isPresented: $showingHelp) {
+                HelpView()
             }
         }
     }

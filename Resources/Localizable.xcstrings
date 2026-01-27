@@ -730,6 +730,386 @@
           }
         }
       }
+    },
+    "Getting Started" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Getting Started"
+          }
+        }
+      }
+    },
+    "Playback Controls" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Playback Controls"
+          }
+        }
+      }
+    },
+    "Segments & Granularity" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Segments & Granularity"
+          }
+        }
+      }
+    },
+    "Text-to-Speech Providers" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Text-to-Speech Providers"
+          }
+        }
+      }
+    },
+    "Voice Selection" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voice Selection"
+          }
+        }
+      }
+    },
+    "Microsoft Azure Setup" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Microsoft Azure Setup"
+          }
+        }
+      }
+    },
+    "Language Detection" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Language Detection"
+          }
+        }
+      }
+    },
+    "Tips & Best Practices" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tips & Best Practices"
+          }
+        }
+      }
+    },
+    "Double tap to expand or collapse" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double tap to expand or collapse"
+          }
+        }
+      }
+    },
+    "help.gettingStarted.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speech Practice helps you rehearse speeches by reading text aloud while you follow along. Create a speech, paste or type your text, then tap Practice to begin. The app reads each segment and can pause so you can repeat it back."
+          }
+        }
+      }
+    },
+    "help.playbackControls.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "During practice, use the play/pause button to control playback. Tap the forward or backward buttons to skip between segments. You can also tap directly on any segment in the text to jump to it."
+          }
+        }
+      }
+    },
+    "help.speechRate.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adjust the speech rate slider in Settings to control how fast text is read aloud. The range is 0.1x (very slow) to 1.0x (normal speed). Start slower when learning a new speech, then increase the speed as you become more comfortable."
+          }
+        }
+      }
+    },
+    "help.pauseMode.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause Mode is the core feature for speech practice. When enabled, the app pauses after reading each segment for the same duration it took to read. This gives you time to repeat the segment aloud yourself. Enable Pause Mode in Settings to practice your echo timing."
+          }
+        }
+      }
+    },
+    "help.segments.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your speech is divided into segments for navigation and pause timing. In Settings, choose between Sentence or Paragraph granularity. Sentence mode pauses after each sentence, ideal for detailed practice. Paragraph mode pauses after each paragraph, better for practicing flow and pacing."
+          }
+        }
+      }
+    },
+    "help.ttsProviders.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The app supports multiple text-to-speech engines."
+          }
+        }
+      }
+    },
+    "help.ttsProviders.ios.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uses Apple's built-in speech synthesis. Works offline with no setup required. Quality varies by voice."
+          }
+        }
+      }
+    },
+    "help.ttsProviders.tartuNLP.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A free service providing high-quality Estonian voices. Requires an internet connection. Automatically selected for Estonian text."
+          }
+        }
+      }
+    },
+    "help.ttsProviders.azure.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Premium neural voices with natural-sounding speech. Requires an Azure account and API key. Offers the highest quality voices across many languages."
+          }
+        }
+      }
+    },
+    "help.voiceSelection.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Each TTS provider offers different voices. In Settings, tap the Voice picker to choose from available voices. iOS voices marked 'Enhanced' offer better quality. For Microsoft Azure, you'll see neural voices with natural intonation. The voice list filters to show only voices that match your speech's language."
+          }
+        }
+      }
+    },
+    "help.azureSetup.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To use Microsoft Azure voices, you need an Azure account with a Speech Services resource."
+          }
+        }
+      }
+    },
+    "help.azureSetup.createAccount.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create an Azure Account"
+          }
+        }
+      }
+    },
+    "help.azureSetup.createAccount.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visit portal.azure.com and sign up for an Azure account. New accounts include free credits."
+          }
+        }
+      }
+    },
+    "help.azureSetup.createResource.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create a Speech Resource"
+          }
+        }
+      }
+    },
+    "help.azureSetup.createResource.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In the Azure Portal, create a new Speech Services resource. The free tier includes 500,000 characters per month."
+          }
+        }
+      }
+    },
+    "help.azureSetup.getApiKey.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Get Your API Key"
+          }
+        }
+      }
+    },
+    "help.azureSetup.getApiKey.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Once created, find your resource's Keys and Endpoint section. Copy either Key 1 or Key 2."
+          }
+        }
+      }
+    },
+    "help.azureSetup.configureApp.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configure in App"
+          }
+        }
+      }
+    },
+    "help.azureSetup.configureApp.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In Settings, select Microsoft Azure as your TTS provider, then tap Microsoft Azure Settings. Enter your API key and select your resource's region."
+          }
+        }
+      }
+    },
+    "help.languageDetection.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The app automatically detects the language of your speech content as you type. This determines which voices are available and which TTS provider to use. You can also manually set the language for a speech if the automatic detection isn't accurate for your content."
+          }
+        }
+      }
+    },
+    "help.tips.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For effective speech practice:"
+          }
+        }
+      }
+    },
+    "help.tips.startSlow.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start Slow"
+          }
+        }
+      }
+    },
+    "help.tips.startSlow.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Begin with a slower speech rate (0.3x-0.5x) to clearly hear each word. Increase speed as you memorize the content."
+          }
+        }
+      }
+    },
+    "help.tips.usePauseMode.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use Pause Mode"
+          }
+        }
+      }
+    },
+    "help.tips.usePauseMode.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable Pause Mode to practice active recall. Repeat each segment during the pause to build memory."
+          }
+        }
+      }
+    },
+    "help.tips.practiceChunks.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practice in Chunks"
+          }
+        }
+      }
+    },
+    "help.tips.practiceChunks.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use Paragraph mode to practice larger sections once you're comfortable with individual sentences."
+          }
+        }
+      }
+    },
+    "help.tips.reviewRegularly.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review Regularly"
+          }
+        }
+      }
+    },
+    "help.tips.reviewRegularly.content" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Short, frequent practice sessions are more effective than long, infrequent ones."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
