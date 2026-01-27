@@ -1,11 +1,24 @@
 import SwiftUI
 import SwiftData
 
+struct SpeechToEdit: Hashable {
+    let speech: Speech
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(speech.id)
+    }
+
+    static func == (lhs: SpeechToEdit, rhs: SpeechToEdit) -> Bool {
+        lhs.speech.id == rhs.speech.id
+    }
+}
+
 struct SpeechListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Speech.updatedAt, order: .reverse) private var speeches: [Speech]
     @State private var searchText = ""
     @State private var showingNewSpeechSheet = false
+    @State private var navigationPath = NavigationPath()
 
     private var filteredSpeeches: [Speech] {
         if searchText.isEmpty {
@@ -18,7 +31,7 @@ struct SpeechListView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             Group {
                 if speeches.isEmpty {
                     emptyStateView
@@ -29,6 +42,12 @@ struct SpeechListView: View {
                 }
             }
             .navigationTitle("Speeches")
+            .navigationDestination(for: SpeechToEdit.self) { item in
+                SpeechEditorView(speech: item.speech)
+            }
+            .navigationDestination(for: Speech.self) { speech in
+                SpeechDetailView(speech: speech)
+            }
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
@@ -42,7 +61,10 @@ struct SpeechListView: View {
             .searchable(text: $searchText, prompt: "Search speeches")
             .sheet(isPresented: $showingNewSpeechSheet) {
                 NewSpeechSheet { title in
-                    createSpeech(title: title)
+                    let speech = createSpeech(title: title)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        navigationPath.append(SpeechToEdit(speech: speech))
+                    }
                 }
             }
         }
@@ -74,12 +96,10 @@ struct SpeechListView: View {
             }
             .onDelete(perform: deleteSpeeches)
         }
-        .navigationDestination(for: Speech.self) { speech in
-            SpeechDetailView(speech: speech)
-        }
     }
 
-    private func createSpeech(title: String) {
+    @discardableResult
+    private func createSpeech(title: String) -> Speech {
         let speech = Speech(title: title.isEmpty ? "Untitled Speech" : title)
         modelContext.insert(speech)
         do {
@@ -88,6 +108,7 @@ struct SpeechListView: View {
             print("Failed to save new speech: \(error)")
         }
         HapticManager.shared.playLightImpact()
+        return speech
     }
 
     private func deleteSpeeches(at offsets: IndexSet) {
