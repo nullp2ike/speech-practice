@@ -39,11 +39,23 @@ struct SettingsView: View {
                                 Text(type.displayName).tag(type)
                             }
                         }
+
+                        VStack(alignment: .leading) {
+                            Text("Pause Duration: \(viewModel.settings.pauseDurationRate, specifier: "%.2g")x")
+                            Slider(
+                                value: Binding(
+                                    get: { Double(viewModel.settings.pauseDurationRate) },
+                                    set: { viewModel.updatePauseDurationRate(Float($0)) }
+                                ),
+                                in: Double(PlaybackSettings.minPauseDurationRate)...Double(PlaybackSettings.maxPauseDurationRate),
+                                step: 0.25
+                            )
+                        }
                     }
                 } header: {
                     Text("Pause Mode")
                 } footer: {
-                    Text("When enabled, playback will pause after each segment for the same duration it took to read.")
+                    Text("When enabled, playback will pause after each segment. Adjust the pause duration multiplier to give yourself more or less time to repeat.")
                 }
 
                 ttsProviderSection

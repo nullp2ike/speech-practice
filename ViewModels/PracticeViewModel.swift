@@ -317,6 +317,11 @@ final class PracticeViewModel {
         // didSet on settings handles save()
     }
 
+    func updatePauseDurationRate(_ rate: Float) {
+        settings.setPauseDurationRate(rate)
+        // didSet on settings handles save()
+    }
+
     func updatePauseGranularity(_ granularity: SegmentType) {
         let wasPlaying = isPlaying
         stop()
@@ -426,12 +431,14 @@ final class PracticeViewModel {
     }
 
     private func startPauseInterval(duration: TimeInterval) {
+        let adjustedDuration = duration * Double(settings.pauseDurationRate)
+
         isInPauseInterval = true
-        pauseTimeRemaining = duration
+        pauseTimeRemaining = adjustedDuration
 
         // Capture values at task creation to avoid race conditions
         let updateInterval = Self.pauseUpdateInterval
-        let totalDuration = duration
+        let totalDuration = adjustedDuration
         let startTime = Date()
 
         pauseTask = Task { [weak self] in

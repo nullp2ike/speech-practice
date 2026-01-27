@@ -5,6 +5,7 @@ struct PlaybackSettings: Equatable, Sendable {
     var rate: Float
     var pauseEnabled: Bool
     var pauseGranularity: SegmentType
+    var pauseDurationRate: Float
     var voiceIdentifier: String?
     var ttsProvider: TTSProvider
     var azureVoicePreference: AzureVoicePreference
@@ -15,10 +16,15 @@ struct PlaybackSettings: Equatable, Sendable {
     static let maxRate: Float = 1.0
     static let defaultRate: Float = AVSpeechUtteranceDefaultSpeechRate
 
+    static let minPauseDurationRate: Float = 0.25
+    static let maxPauseDurationRate: Float = 3.0
+    static let defaultPauseDurationRate: Float = 1.0
+
     init(
         rate: Float = AVSpeechUtteranceDefaultSpeechRate,
         pauseEnabled: Bool = true,
         pauseGranularity: SegmentType = .sentence,
+        pauseDurationRate: Float = defaultPauseDurationRate,
         voiceIdentifier: String? = nil,
         ttsProvider: TTSProvider = .ios,
         azureVoicePreference: AzureVoicePreference = AzureVoicePreference(),
@@ -27,6 +33,7 @@ struct PlaybackSettings: Equatable, Sendable {
         self.rate = min(max(rate, Self.minRate), Self.maxRate)
         self.pauseEnabled = pauseEnabled
         self.pauseGranularity = pauseGranularity
+        self.pauseDurationRate = min(max(pauseDurationRate, Self.minPauseDurationRate), Self.maxPauseDurationRate)
         self.voiceIdentifier = voiceIdentifier
         self.ttsProvider = ttsProvider
         self.azureVoicePreference = azureVoicePreference
@@ -44,7 +51,7 @@ struct PlaybackSettings: Equatable, Sendable {
 
 extension PlaybackSettings: Codable {
     private enum CodingKeys: String, CodingKey {
-        case rate, pauseEnabled, pauseGranularity, voiceIdentifier
+        case rate, pauseEnabled, pauseGranularity, pauseDurationRate, voiceIdentifier
         case ttsProvider, azureVoicePreference, hasUserSelectedProvider
     }
 
@@ -55,6 +62,11 @@ extension PlaybackSettings: Codable {
         self.rate = min(max(decodedRate, Self.minRate), Self.maxRate)
         self.pauseEnabled = try container.decode(Bool.self, forKey: .pauseEnabled)
         self.pauseGranularity = try container.decode(SegmentType.self, forKey: .pauseGranularity)
+
+        // Migration: older settings won't have pauseDurationRate
+        let decodedPauseDurationRate = try container.decodeIfPresent(Float.self, forKey: .pauseDurationRate) ?? Self.defaultPauseDurationRate
+        self.pauseDurationRate = min(max(decodedPauseDurationRate, Self.minPauseDurationRate), Self.maxPauseDurationRate)
+
         self.voiceIdentifier = try container.decodeIfPresent(String.self, forKey: .voiceIdentifier)
         self.ttsProvider = try container.decode(TTSProvider.self, forKey: .ttsProvider)
         self.azureVoicePreference = try container.decodeIfPresent(AzureVoicePreference.self, forKey: .azureVoicePreference) ?? AzureVoicePreference()
@@ -75,6 +87,7 @@ extension PlaybackSettings: Codable {
         try container.encode(rate, forKey: .rate)
         try container.encode(pauseEnabled, forKey: .pauseEnabled)
         try container.encode(pauseGranularity, forKey: .pauseGranularity)
+        try container.encode(pauseDurationRate, forKey: .pauseDurationRate)
         try container.encodeIfPresent(voiceIdentifier, forKey: .voiceIdentifier)
         try container.encode(ttsProvider, forKey: .ttsProvider)
         try container.encode(azureVoicePreference, forKey: .azureVoicePreference)
@@ -113,6 +126,10 @@ extension PlaybackSettings {
 
     mutating func setRate(_ newRate: Float) {
         rate = min(max(newRate, Self.minRate), Self.maxRate)
+    }
+
+    mutating func setPauseDurationRate(_ newRate: Float) {
+        pauseDurationRate = min(max(newRate, Self.minPauseDurationRate), Self.maxPauseDurationRate)
     }
 }
 

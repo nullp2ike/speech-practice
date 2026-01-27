@@ -371,12 +371,12 @@
         }
       }
     },
-    "When enabled, playback will pause after each segment for the same duration it took to read." : {
+    "When enabled, playback will pause after each segment. Adjust the pause duration multiplier to give yourself more or less time to repeat." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "When enabled, playback will pause after each segment for the same duration it took to read."
+            "value" : "When enabled, playback will pause after each segment. Adjust the pause duration multiplier to give yourself more or less time to repeat."
           }
         }
       }
