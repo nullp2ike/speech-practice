@@ -3,13 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		0005FE540C3E01A115A2863D /* String+Parsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 463C25C32ACAF8CA69DE2E80 /* String+Parsing.swift */; };
 		0DF3C546EEB9F206FC46FE61 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B9B3A5B3E7D397A452B150 /* SettingsView.swift */; };
-		A1B2C3D4E5F67890A1B2C3D4 /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F67890A1B2C3D4E5 /* HelpView.swift */; };
 		0FC10E1E1E4858D14A4B2B74 /* SpeechSynthesizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2303E50B7B077A84EC8D4D /* SpeechSynthesizing.swift */; };
 		1BC671A6FD86B7094950014E /* AzureTTSClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38940865C51F356F4784FD6F /* AzureTTSClient.swift */; };
 		26ECF6A531AC2E408F3ACBA2 /* SpeechSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2765474FAD6EF88AB2A1267 /* SpeechSegment.swift */; };
@@ -22,6 +21,7 @@
 		523F0D782FC27BC2B4DB9FAF /* SpeechEditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853BDCB78B3E48E46C753156 /* SpeechEditorViewModel.swift */; };
 		58C7ADDF2EA3EB6F7C960E50 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 533FA39E7FB1BA9AF9D7E113 /* HapticManager.swift */; };
 		5D857082799CFD4AC627DB4B /* TTSProviderSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00DE0F072C31F8B40251D1E /* TTSProviderSettings.swift */; };
+		690BAE5C481A9873B8B8C139 /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A40B9CA1E12C2B396980F430 /* HelpView.swift */; };
 		6D3A5087DA549D6EB1A0A94E /* EstonianTTSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DE10CEFAFF5B5388C792B5 /* EstonianTTSService.swift */; };
 		7189B98837310CDCA0B6620B /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC414EF1FCFE2CA1D602EC70 /* KeychainService.swift */; };
 		7C96127B8A5AB5155B5B0948 /* TextParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FCBB55C8E233C37EA5AF782 /* TextParser.swift */; };
@@ -55,10 +55,9 @@
 		57C50B336AC41BAE889C39F0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		63F2B9731CE37CC68BE7989C /* TartuNLPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TartuNLPClient.swift; sourceTree = "<group>"; };
 		6BC4491E42C4910D8465A9FC /* PracticeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeViewModel.swift; sourceTree = "<group>"; };
-		6CF7838893C621C4B9EAF050 /* SpeechPractice.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SpeechPractice.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6CF7838893C621C4B9EAF050 /* SpeechPractice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpeechPractice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D74FC80DCD5D2E9784EC01E /* SpeechEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechEditorView.swift; sourceTree = "<group>"; };
 		73F8DF426CE9F49F5B4A7936 /* SpeechListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechListView.swift; sourceTree = "<group>"; };
-		B2C3D4E5F67890A1B2C3D4E5 /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
 		7EF1E486D210AFE545E61707 /* SpeechServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechServiceFactory.swift; sourceTree = "<group>"; };
 		7F77F167B21FCA5DA86F100B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7FCBB55C8E233C37EA5AF782 /* TextParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextParser.swift; sourceTree = "<group>"; };
@@ -66,9 +65,11 @@
 		853BDCB78B3E48E46C753156 /* SpeechEditorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechEditorViewModel.swift; sourceTree = "<group>"; };
 		A021DF95731B9949D07A35B5 /* AudioPlayerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerService.swift; sourceTree = "<group>"; };
 		A19A8597ACD00ECEC2625E04 /* AzureSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AzureSettingsView.swift; sourceTree = "<group>"; };
+		A40B9CA1E12C2B396980F430 /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
 		B00DE0F072C31F8B40251D1E /* TTSProviderSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSProviderSettings.swift; sourceTree = "<group>"; };
 		B563EA98B8125549C172A830 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		BC414EF1FCFE2CA1D602EC70 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		BD87D3082F42724100F7BE1D /* SpeechPractice-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "SpeechPractice-Info.plist"; sourceTree = "<group>"; };
 		D2765474FAD6EF88AB2A1267 /* SpeechSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechSegment.swift; sourceTree = "<group>"; };
 		F8CC7A69873F23FB9EF3A8A9 /* Speech.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Speech.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -80,7 +81,7 @@
 				A19A8597ACD00ECEC2625E04 /* AzureSettingsView.swift */,
 				559277140FB6FE4E0B65A41C /* AzureVoicePicker.swift */,
 				57C50B336AC41BAE889C39F0 /* ContentView.swift */,
-				B2C3D4E5F67890A1B2C3D4E5 /* HelpView.swift */,
+				A40B9CA1E12C2B396980F430 /* HelpView.swift */,
 				13D8030FFBA8A22C2F789921 /* PracticeView.swift */,
 				27B9B3A5B3E7D397A452B150 /* SettingsView.swift */,
 				6D74FC80DCD5D2E9784EC01E /* SpeechEditorView.swift */,
@@ -131,6 +132,7 @@
 		BCBF3CE9664ACA475EA1BC51 = {
 			isa = PBXGroup;
 			children = (
+				BD87D3082F42724100F7BE1D /* SpeechPractice-Info.plist */,
 				32B24B23FFAF63E2B3C99EF2 /* SpeechPracticeApp.swift */,
 				FFC08797401C3478FA90A585 /* Extensions */,
 				7660F595A38FF02E3FC02067 /* Models */,
@@ -198,7 +200,7 @@
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					7C776BDD306D73746BBBB4F0 = {
-						DevelopmentTeam = "";
+						DevelopmentTeam = H5XV8L7H24;
 					};
 				};
 			};
@@ -212,7 +214,6 @@
 			);
 			mainGroup = BCBF3CE9664ACA475EA1BC51;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -245,7 +246,7 @@
 				4326B6B60CE721FC4B917F7F /* ContentView.swift in Sources */,
 				6D3A5087DA549D6EB1A0A94E /* EstonianTTSService.swift in Sources */,
 				58C7ADDF2EA3EB6F7C960E50 /* HapticManager.swift in Sources */,
-				A1B2C3D4E5F67890A1B2C3D4 /* HelpView.swift in Sources */,
+				690BAE5C481A9873B8B8C139 /* HelpView.swift in Sources */,
 				7189B98837310CDCA0B6620B /* KeychainService.swift in Sources */,
 				8C857A35DAE9F3186493EEC9 /* MicrosoftTTSService.swift in Sources */,
 				FC92F35F0EE2BCA854576596 /* PlaybackSettings.swift in Sources */,
@@ -278,8 +279,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = H5XV8L7H24;
 				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = "SpeechPractice-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Speech Practice";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -290,6 +293,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.speechpractice.app;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -302,8 +306,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = H5XV8L7H24;
 				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = "SpeechPractice-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Speech Practice";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -314,6 +320,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.speechpractice.app;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
